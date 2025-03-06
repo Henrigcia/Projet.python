@@ -13,12 +13,16 @@ class GameView(arcade.View):
     wall_list: arcade.SpriteList[arcade.Sprite]
     coin_list: arcade.SpriteList[arcade.Sprite]
     camera: arcade.camera.Camera2D
+    sound : arcade.Sound
+    sound_2 : arcade.Sound
 
     def __init__(self) -> None:
         # Magical incantion: initialize the Arcade view
         super().__init__()
         self.right_pressed = False
         self.left_pressed = False
+        self.sound=arcade.Sound(":resources:sounds/coin1.wav")
+        self.sound_2=arcade.Sound(":resources:sounds/jump1.wav" )
 
         # Choose a nice comfy background color
         self.background_color = arcade.csscolor.CORNFLOWER_BLUE
@@ -121,6 +125,7 @@ class GameView(arcade.View):
                 if self.physics_engine.can_jump():
                     self.player_sprite.change_y = PLAYER_JUMP_SPEED
                     # jump by giving an initial vertical speed
+                    arcade.play_sound(self.sound_2)
                 
         self.update_movement() 
         """Movement update after pressing a key"""
@@ -152,3 +157,5 @@ class GameView(arcade.View):
         coins_to_hit = arcade.check_for_collision_with_list(self.player_sprite, self.coin_list)
         for coin in coins_to_hit:
             coin.remove_from_sprite_lists()
+            arcade.play_sound(self.sound)
+
