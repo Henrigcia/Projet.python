@@ -1,6 +1,21 @@
-def main() -> None:
-    print("Hello from projet-python!")
+import arcade 
+from Gameview import GameView
+# Constants
+WINDOW_WIDTH = 1280
+WINDOW_HEIGHT = 720
+WINDOW_TITLE = "Platformer"
+PLAYER_MOVEMENT_SPEED = 8
+PLAYER_GRAVITY = 1
+PLAYER_JUMP_SPEED = 18
 
+def main() -> None:
+    """Main function."""
+
+    # Create the (unique) Window, setup our GameView, and launch
+    window = arcade.Window(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE)
+    game_view = GameView()
+    window.show_view(game_view)
+    arcade.run()
 
 if __name__ == "__main__":
     main()
