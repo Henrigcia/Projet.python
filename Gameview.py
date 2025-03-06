@@ -17,6 +17,8 @@ class GameView(arcade.View):
     def __init__(self) -> None:
         # Magical incantion: initialize the Arcade view
         super().__init__()
+        self.right_pressed = False
+        self.left_pressed = False
 
         # Choose a nice comfy background color
         self.background_color = arcade.csscolor.CORNFLOWER_BLUE
@@ -30,6 +32,8 @@ class GameView(arcade.View):
             walls=self.wall_list,
             gravity_constant=PLAYER_GRAVITY
         )
+        self.physics_engine.disable_multi_jump()
+        self.physics_engine.can_jump()
         self.camera = arcade.camera.Camera2D()
 
     def setup(self) -> None:
@@ -93,31 +97,55 @@ class GameView(arcade.View):
 
             #some_sprite_list.draw_hit_boxes()
 
+    def update_movement(self):
+        speed =0
+        if self.right_pressed and not self.left_pressed:
+            speed = +PLAYER_MOVEMENT_SPEED
+        elif self.left_pressed and not self.right_pressed:
+            speed = -PLAYER_MOVEMENT_SPEED
+        else: 
+            speed = 0
+        self.player_sprite.change_x = speed
+
+
     def on_key_press(self, key: int, modifiers: int) -> None:
         """Called when the user presses a key on the keyboard."""
         match key:
             case arcade.key.RIGHT:
                 # start moving to the right
-                self.player_sprite.change_x = +PLAYER_MOVEMENT_SPEED
+                self.right_pressed = True
             case arcade.key.LEFT:
                 # start moving to the left
-                self.player_sprite.change_x = -PLAYER_MOVEMENT_SPEED
+                self.left_pressed = True
             case arcade.key.UP:
-                # jump by giving an initial vertical speed
-                self.player_sprite.change_y = PLAYER_JUMP_SPEED
+                if self.physics_engine.can_jump():
+                    self.player_sprite.change_y = PLAYER_JUMP_SPEED
+                    # jump by giving an initial vertical speed
+                
+        self.update_movement() 
+        """Movement update after pressing a key"""
 
     def on_key_release(self, key: int, modifiers: int) -> None:
         """Called when the user releases a key on the keyboard."""
         match key:
-            case arcade.key.RIGHT | arcade.key.LEFT:
-                # stop lateral movement
-                self.player_sprite.change_x = 0
+            case arcade.key.RIGHT:
+                self.right_pressed = False
+            case arcade.key.LEFT:
+                self.left_pressed = False
+        self.update_movement()
+            
+    
+    
+            
+
+            
+            
 
     def on_update(self, delta_time: float) -> None:
         """Called once per frame, before drawing.
 
-        This is where in-world time "advances", or "ticks".
-        """
+        This is where in-world time "advances"", or "ticks"."""
+        
         self.physics_engine.update()
         self.camera.position = self.player_sprite.position
 
