@@ -79,6 +79,8 @@ class GameView(arcade.View):
 
                     if char == "S":  
                         self.player_sprite = sprite  # Spawnpoint  
+                        self.start_x = sprite.center_x  # Store start X
+                        self.start_y = sprite.center_y  # Store start Y
                     elif char == "*":  
                         self.coin_list.append(sprite)  # add a coin
                     elif char == "o":  
@@ -179,4 +181,13 @@ class GameView(arcade.View):
         for coin in coins_to_hit:
             coin.remove_from_sprite_lists()
             arcade.play_sound(self.sound)
+        
+        if arcade.check_for_collision_with_list(self.player_sprite, self.lava_list):
+        
+            self.player_sprite.center_x = self.start_x  # Reset X
+            self.player_sprite.center_y = self.start_y  # Reset Y
 
+        if arcade.check_for_collision_with_list(self.player_sprite, self.blob_list):
+        
+            self.player_sprite.center_x = self.start_x  # Reset X
+            self.player_sprite.center_y = self.start_y  # Reset Y
