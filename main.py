@@ -1,13 +1,12 @@
 import arcade 
+import os
 from Gameview import GameView
 # Constants
 WINDOW_WIDTH = 1280
 WINDOW_HEIGHT = 720
 WINDOW_TITLE = "Platformer"
 
-PLAYER_GRAVITY = 1
-PLAYER_MOVEMENT_SPEED = 8
-PLAYER_JUMP_SPEED = 18
+
 
 def main() -> None:
     """Main function."""
