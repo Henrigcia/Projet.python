@@ -4,6 +4,9 @@ import os
 PLAYER_MOVEMENT_SPEED = 8
 PLAYER_GRAVITY = 1
 PLAYER_JUMP_SPEED = 18
+CAMERA_PAN_SPEED = 0.3
+GRID_PIXEL_SIZE = 64
+
 
 SYMBOLS = {
 
@@ -53,6 +56,16 @@ class GameView(arcade.View):
         self.physics_engine.can_jump()
         self.camera = arcade.camera.Camera2D()
 
+        max_x = GRID_PIXEL_SIZE * self.width 
+        max_y = GRID_PIXEL_SIZE * self.height 
+
+        self.camera_bounds = arcade.LRBT(
+            self.window.width / 2.0,
+            max_x - self.window.width / 1.5,
+            self.window.height / 2.0,
+            max_y - self.window.height / 10.0
+        )
+
     def load_map(self, filename="maps/map1.txt"):
         """Charge la carte depuis un fichier texte et place les objets sur la scène."""
         
@@ -68,8 +81,14 @@ class GameView(arcade.View):
 
         lines.reverse()  # Reverse line order (Arcade places (0,0) at the bottom)
 
+
+        map_height = len(lines)
+        tile_size = 64
+
         for row_index, line in enumerate(lines):
             for col_index, char in enumerate(line):  # Reads through the caracters 
+                x = col_index * tile_size
+                y = (map_height - row_index - 1) * tile_size # Flip y axis
                 if char in SYMBOLS:
                     TILE_SIZE = 64
                     texture = SYMBOLS[char]
@@ -79,8 +98,9 @@ class GameView(arcade.View):
 
                     if char == "S":  
                         self.player_sprite = sprite  # Spawnpoint  
-                        self.start_x = sprite.center_x  # Store start X
-                        self.start_y = sprite.center_y  # Store start Y
+
+                        self.start_x = x  # Store start coordinates
+                        self.start_y = y  
                     elif char == "*":  
                         self.coin_list.append(sprite)  # add a coin
                     elif char == "o":  
@@ -115,13 +135,13 @@ class GameView(arcade.View):
     def on_draw(self) -> None:
         """Render the screen."""
         self.clear() # always start with self.clear()
-        with self.camera.activate():
-            self.wall_list.draw()
-            self.lava_list.draw()
-            self.blob_list.draw()
-            self.coin_list.draw()
-            self.player_sprite_list.draw()
-            #some_sprite_list.draw_hit_boxes()
+        self.camera.use()
+        self.wall_list.draw()
+        self.lava_list.draw()
+        self.blob_list.draw()
+        self.coin_list.draw()
+        self.player_sprite_list.draw()
+        #some_sprite_list.draw_hit_boxes()
 
     def update_movement(self):
         speed =0
@@ -167,7 +187,7 @@ class GameView(arcade.View):
             
 
             
-            
+    
 
     def on_update(self, delta_time: float) -> None:
         """Called once per frame, before drawing.
@@ -175,7 +195,8 @@ class GameView(arcade.View):
         This is where in-world time "advances"", or "ticks"."""
         
         self.physics_engine.update()
-        self.camera.position = self.player_sprite.position
+
+        self.pan_camera_to_player(CAMERA_PAN_SPEED)
 
         coins_to_hit = arcade.check_for_collision_with_list(self.player_sprite, self.coin_list)
         for coin in coins_to_hit:
@@ -191,3 +212,15 @@ class GameView(arcade.View):
         
             self.player_sprite.center_x = self.start_x  # Reset X
             self.player_sprite.center_y = self.start_y  # Reset Y
+
+        
+
+    def pan_camera_to_player(self, panning_fraction: float = 1.0):
+        self.camera.position = arcade.math.smerp_2d(
+            
+            self.camera.position,
+            self.player_sprite.position,
+            self.window.delta_time,
+            panning_fraction,
+             )
+        self.camera.position = arcade.camera.grips.constrain_xy(self.camera.view_data, self.camera_bounds)
