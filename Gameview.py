@@ -128,7 +128,8 @@ class GameView(arcade.View):
         
         self.player_sprite_list.append(self.player_sprite)
 
-        for blob in self.blob_list:
+        blob : arcade.Sprite          #Get all bolbs moving
+        for blob in self.blob_list:         
             blob.change_x  = BLOB_MOVEMENT_SPEED
 
 
@@ -200,27 +201,23 @@ class GameView(arcade.View):
             blob.center_x += blob.change_x
                         
             if arcade.check_for_collision_with_list(blob, self.wall_list):  #Check if with the changes the blob touches the wall 
-                blob.change_x = - blob.change_x
+                blob.change_x = - blob.change_x                             # invert speed if so  
             
-            if blob.change_x > 0:             #Blobs stop right side
-                blob.center_x += BLOB_SIZE 
-                blob.center_y -= 1
+            if blob.change_x > 0:             # Logic for Blobs stop right side
+                blob.center_x += BLOB_SIZE      # Move temporarily 1 BLOB_SIZE RIGHT 
+                blob.center_y -= 1              # and 1 pix down
+                if not arcade.check_for_collision_with_list(blob, self.wall_list):  # Check if no longer supported by wall
+                    blob.change_x = - blob.change_x                                 # invert speed if so    
+                blob.center_x -= BLOB_SIZE      # restore x
+                blob.center_y += 1              # restore y
 
-                if not arcade.check_for_collision_with_list(blob, self.wall_list):
-                    blob.change_x = - blob.change_x
-                
-                blob.center_x -= BLOB_SIZE 
-                blob.center_y += 1
-
-            elif blob.change_x < 0:          #Blobs stop left side
-                blob.center_x -= BLOB_SIZE 
-                blob.center_y -= 1
-
-                if not arcade.check_for_collision_with_list(blob, self.wall_list):
-                    blob.change_x = - blob.change_x
-                
-                blob.center_x += BLOB_SIZE 
-                blob.center_y += 1
+            elif blob.change_x < 0:          # Logic for Blobs stop left side
+                blob.center_x -= BLOB_SIZE      # Move temporarily 1 BLOB_SIZE LEFT
+                blob.center_y -= 1              # and 1 pix down
+                if not arcade.check_for_collision_with_list(blob, self.wall_list):  # Check if no longer supported by wall
+                    blob.change_x = - blob.change_x                                  # invert speed if so            
+                blob.center_x += BLOB_SIZE      # restore x
+                blob.center_y += 1              # restore y
                 
         #Player's movement
         self.physics_engine.update()
