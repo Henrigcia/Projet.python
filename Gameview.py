@@ -6,6 +6,8 @@ PLAYER_GRAVITY = 1
 PLAYER_JUMP_SPEED = 18
 CAMERA_PAN_SPEED = 0.3
 GRID_PIXEL_SIZE = 64
+BLOB_MOVEMENT_SPEED = 1
+BLOB_SIZE = 40
 
 
 SYMBOLS = {
@@ -31,6 +33,7 @@ class GameView(arcade.View):
     camera: arcade.camera.Camera2D
     sound : arcade.Sound
     sound_2 : arcade.Sound
+    
 
     def __init__(self) -> None:
         # Magical incantion: initialize the Arcade view
@@ -41,7 +44,7 @@ class GameView(arcade.View):
         self.sound_2=arcade.Sound(":resources:sounds/jump1.wav" )
 
         # Choose a nice comfy background color
-        self.background_color = arcade.csscolor.DARK_RED
+        self.background_color = arcade.csscolor.LIGHT_BLUE
         
         # Setup our game
         self.setup()
@@ -125,10 +128,8 @@ class GameView(arcade.View):
         
         self.player_sprite_list.append(self.player_sprite)
 
-
-
-
-
+        for blob in self.blob_list:
+            blob.change_x  = BLOB_MOVEMENT_SPEED
 
 
 
@@ -193,27 +194,65 @@ class GameView(arcade.View):
         """Called once per frame, before drawing.
 
         This is where in-world time "advances"", or "ticks"."""
-        
+
+        # Blobs movement
+        for blob in self.blob_list:  
+            blob.center_x += blob.change_x
+                        
+            if arcade.check_for_collision_with_list(blob, self.wall_list):  #Check if with the changes the blob touches the wall 
+                blob.change_x = - blob.change_x
+            
+            if blob.change_x > 0:             #Blobs stop right side
+                blob.center_x += BLOB_SIZE 
+                blob.center_y -= 1
+
+                if not arcade.check_for_collision_with_list(blob, self.wall_list):
+                    blob.change_x = - blob.change_x
+                
+                blob.center_x -= BLOB_SIZE 
+                blob.center_y += 1
+
+            elif blob.change_x < 0:          #Blobs stop left side
+                blob.center_x -= BLOB_SIZE 
+                blob.center_y -= 1
+
+                if not arcade.check_for_collision_with_list(blob, self.wall_list):
+                    blob.change_x = - blob.change_x
+                
+                blob.center_x += BLOB_SIZE 
+                blob.center_y += 1
+                
+        #Player's movement
         self.physics_engine.update()
 
         self.pan_camera_to_player(CAMERA_PAN_SPEED)
 
+        #Collect coin(s)
         coins_to_hit = arcade.check_for_collision_with_list(self.player_sprite, self.coin_list)
         for coin in coins_to_hit:
             coin.remove_from_sprite_lists()
             arcade.play_sound(self.sound)
         
+        #Check lavas hit
         if arcade.check_for_collision_with_list(self.player_sprite, self.lava_list):
         
             self.player_sprite.center_x = self.start_x  # Reset X
             self.player_sprite.center_y = self.start_y  # Reset Y
-
+        
+        #Check blobs hit
         if arcade.check_for_collision_with_list(self.player_sprite, self.blob_list):
         
             self.player_sprite.center_x = self.start_x  # Reset X
             self.player_sprite.center_y = self.start_y  # Reset Y
 
-        
+
+
+            
+            
+    
+
+                
+                
 
     def pan_camera_to_player(self, panning_fraction: float = 1.0):
         self.camera.position = arcade.math.smerp_2d(
