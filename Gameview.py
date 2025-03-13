@@ -199,15 +199,19 @@ class GameView(arcade.View):
         # Blobs movement
         for blob in self.blob_list:  
             blob.center_x += blob.change_x
+            if blob.scale_x*blob.change_x > 0:
+                blob.scale_x*= -1
                         
             if arcade.check_for_collision_with_list(blob, self.wall_list):  #Check if with the changes the blob touches the wall 
-                blob.change_x = - blob.change_x                             # invert speed if so  
+                blob.change_x = - blob.change_x   
+                blob.scale_x *= -1                          # invert speed if so  
             
             if blob.change_x > 0:             # Logic for Blobs stop right side
                 blob.center_x += BLOB_SIZE      # Move temporarily 1 BLOB_SIZE RIGHT 
                 blob.center_y -= 1              # and 1 pix down
                 if not arcade.check_for_collision_with_list(blob, self.wall_list):  # Check if no longer supported by wall
-                    blob.change_x = - blob.change_x                                 # invert speed if so    
+                    blob.change_x = - blob.change_x   
+                    blob.scale_x *=-1                              # invert speed if so    
                 blob.center_x -= BLOB_SIZE      # restore x
                 blob.center_y += 1              # restore y
 
@@ -215,7 +219,8 @@ class GameView(arcade.View):
                 blob.center_x -= BLOB_SIZE      # Move temporarily 1 BLOB_SIZE LEFT
                 blob.center_y -= 1              # and 1 pix down
                 if not arcade.check_for_collision_with_list(blob, self.wall_list):  # Check if no longer supported by wall
-                    blob.change_x = - blob.change_x                                  # invert speed if so            
+                    blob.change_x = - blob.change_x 
+                    blob.scale_x *=-1                                    # invert speed if so            
                 blob.center_x += BLOB_SIZE      # restore x
                 blob.center_y += 1              # restore y
                 
