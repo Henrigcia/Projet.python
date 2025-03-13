@@ -4,8 +4,8 @@ import os
 PLAYER_MOVEMENT_SPEED = 8
 PLAYER_GRAVITY = 1
 PLAYER_JUMP_SPEED = 18
-CAMERA_PAN_SPEED = 0.3
-GRID_PIXEL_SIZE = 64
+CAMERA_PAN_SPEED = 0.5
+GRID_PIXEL_SIZE = 90
 BLOB_MOVEMENT_SPEED = 1
 BLOB_SIZE = 40
 
@@ -240,12 +240,14 @@ class GameView(arcade.View):
         
             self.player_sprite.center_x = self.start_x  # Reset X
             self.player_sprite.center_y = self.start_y  # Reset Y
+            
         
         #Check blobs hit
         if arcade.check_for_collision_with_list(self.player_sprite, self.blob_list):
         
             self.player_sprite.center_x = self.start_x  # Reset X
             self.player_sprite.center_y = self.start_y  # Reset Y
+            
 
 
 
@@ -256,12 +258,13 @@ class GameView(arcade.View):
                 
                 
 
-    def pan_camera_to_player(self, panning_fraction: float = 1.0):
+    def pan_camera_to_player(self, panning_fraction: float = 2.0):
         self.camera.position = arcade.math.smerp_2d(
             
             self.camera.position,
             self.player_sprite.position,
             self.window.delta_time,
             panning_fraction,
-             )
-        self.camera.position = arcade.camera.grips.constrain_xy(self.camera.view_data, self.camera_bounds)
+
+            )
+        #self.camera.position = arcade.camera.grips.constrain_xy(self.camera.view_data, self.camera_bounds)
