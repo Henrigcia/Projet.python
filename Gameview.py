@@ -33,6 +33,11 @@ class GameView(arcade.View):
     camera: arcade.camera.Camera2D
     sound : arcade.Sound
     sound_2 : arcade.Sound
+
+    player_sword: arcade.Sprite
+    sword_active: bool
+    sword_list: arcade.SpriteList[arcade.Sprite]
+    
     
 
     def __init__(self) -> None:
@@ -58,16 +63,12 @@ class GameView(arcade.View):
         self.physics_engine.disable_multi_jump()
         self.physics_engine.can_jump()
         self.camera = arcade.camera.Camera2D()
+        
 
         max_x = GRID_PIXEL_SIZE * self.width 
         max_y = GRID_PIXEL_SIZE * self.height 
 
-        self.camera_bounds = arcade.LRBT(
-            self.window.width / 2.0,
-            max_x - self.window.width / 1.5,
-            self.window.height / 2.0,
-            max_y - self.window.height / 10.0
-        )
+        
 
     def load_map(self, filename="maps/map1.txt"):
         """Charge la carte depuis un fichier texte et place les objets sur la scène."""
@@ -87,6 +88,8 @@ class GameView(arcade.View):
 
         map_height = len(lines)
         tile_size = 64
+
+        
 
         for row_index, line in enumerate(lines):
             for col_index, char in enumerate(line):  # Reads through the caracters 
@@ -124,13 +127,23 @@ class GameView(arcade.View):
         self.coin_list = arcade.SpriteList(use_spatial_hash=True)
         self.player_sprite_list = arcade.SpriteList(use_spatial_hash=True)
 
+
         self.load_map("maps/map1.txt")
         
         self.player_sprite_list.append(self.player_sprite)
 
-        blob : arcade.Sprite          #Get all bolbs moving
+        blob : arcade.Sprite          #Get all blobs moving
         for blob in self.blob_list:         
             blob.change_x  = BLOB_MOVEMENT_SPEED
+
+        self.player_sword: arcade.Sprite = arcade.Sprite(
+            "assets/kenney-voxel-items-png/sword_silver.png",
+            scale=0.5 * 0.7
+            )
+        
+        self.sword_active = False
+        self.sword_list = arcade.SpriteList(use_spatial_hash=True)
+        self.sword_list.append(self.player_sword)
 
 
 
@@ -143,6 +156,13 @@ class GameView(arcade.View):
         self.blob_list.draw()
         self.coin_list.draw()
         self.player_sprite_list.draw()
+
+        if self.sword_active:   
+            self.sword_list.draw()
+
+        
+        
+        
         #some_sprite_list.draw_hit_boxes()
 
     def update_movement(self):
@@ -183,6 +203,25 @@ class GameView(arcade.View):
             case arcade.key.LEFT:
                 self.left_pressed = False
         self.update_movement()
+
+    def on_mouse_press(self, x: int, y: int, button: int, modifiers: int) -> None:
+        """Called when the user presses a key on the mouse"""
+        
+        match button: 
+            case arcade.MOUSE_BUTTON_LEFT:
+                self.sword_active = True
+            case arcade.MOUSE_BUTTON_RIGHT:
+                self.mouse_press = True 
+    
+    def on_mouse_release(self, x: int, y: int, button: int, modifiers: int) -> None:
+        """Called when the user presses a key on the mouse"""
+        match button: 
+            case arcade.MOUSE_BUTTON_LEFT:
+                self.sword_active = False
+            case arcade.MOUSE_BUTTON_RIGHT:
+                self.mouse_press = False
+    
+    
             
     
     
@@ -203,15 +242,15 @@ class GameView(arcade.View):
                 blob.scale_x*= -1
                         
             if arcade.check_for_collision_with_list(blob, self.wall_list):  #Check if with the changes the blob touches the wall 
-                blob.change_x = - blob.change_x   
-                blob.scale_x *= -1                          # invert speed if so  
+                blob.change_x = - blob.change_x   #Invert speed
+                blob.scale_x *= -1                #Change looking direction   
             
             if blob.change_x > 0:             # Logic for Blobs stop right side
                 blob.center_x += BLOB_SIZE      # Move temporarily 1 BLOB_SIZE RIGHT 
                 blob.center_y -= 1              # and 1 pix down
                 if not arcade.check_for_collision_with_list(blob, self.wall_list):  # Check if no longer supported by wall
                     blob.change_x = - blob.change_x   
-                    blob.scale_x *=-1                              # invert speed if so    
+                    blob.scale_x *=-1           
                 blob.center_x -= BLOB_SIZE      # restore x
                 blob.center_y += 1              # restore y
 
@@ -220,7 +259,7 @@ class GameView(arcade.View):
                 blob.center_y -= 1              # and 1 pix down
                 if not arcade.check_for_collision_with_list(blob, self.wall_list):  # Check if no longer supported by wall
                     blob.change_x = - blob.change_x 
-                    blob.scale_x *=-1                                    # invert speed if so            
+                    blob.scale_x *=-1                                              
                 blob.center_x += BLOB_SIZE      # restore x
                 blob.center_y += 1              # restore y
                 
@@ -247,20 +286,27 @@ class GameView(arcade.View):
         
             self.player_sprite.center_x = self.start_x  # Reset X
             self.player_sprite.center_y = self.start_y  # Reset Y
+        
+        #Sword
+        
+        if self.sword_active == True:
+            
+            self.player_sword.center_x = self.player_sprite.center_x + 30 # Adjust position
+            self.player_sword.center_y = self.player_sprite.center_y 
+            
+            
+
+            
+         
             
 
 
 
-            
-            
-    
-
-                
+  
                 
 
     def pan_camera_to_player(self, panning_fraction: float = 2.0):
         self.camera.position = arcade.math.smerp_2d(
-            
             self.camera.position,
             self.player_sprite.position,
             self.window.delta_time,
