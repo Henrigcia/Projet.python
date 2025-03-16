@@ -45,8 +45,10 @@ class GameView(arcade.View):
         super().__init__()
         self.right_pressed = False
         self.left_pressed = False
-        self.sound=arcade.Sound(":resources:sounds/coin1.wav")
-        self.sound_2=arcade.Sound(":resources:sounds/jump1.wav" )
+        self.sound_coin=arcade.Sound(":resources:sounds/coin1.wav")
+        self.sound_jump=arcade.Sound(":resources:sounds/jump1.wav" )
+        self.sound_blob=arcade.Sound(":resources:/sounds/explosion1.wav")
+        self.sound_gameover=arcade.Sound(":resources:/sounds/gameover5.wav")
 
         # Choose a nice comfy background color
         self.background_color = arcade.csscolor.LIGHT_BLUE
@@ -190,7 +192,7 @@ class GameView(arcade.View):
                     self.player_sprite.change_y = PLAYER_JUMP_SPEED
                    
                     # jump by giving an initial vertical speed
-                    arcade.play_sound(self.sound_2)
+                    arcade.play_sound(self.sound_jump)
                 
         self.update_movement() 
         """Movement update after pressing a key"""
@@ -206,7 +208,7 @@ class GameView(arcade.View):
 
     def on_mouse_press(self, x: int, y: int, button: int, modifiers: int) -> None:
         """Called when the user presses a key on the mouse"""
-        
+        self.Vecteur = self.camera.unproject((x,y))
         match button: 
             case arcade.MOUSE_BUTTON_LEFT:
                 self.sword_active = True
@@ -215,6 +217,7 @@ class GameView(arcade.View):
     
     def on_mouse_release(self, x: int, y: int, button: int, modifiers: int) -> None:
         """Called when the user presses a key on the mouse"""
+
         match button: 
             case arcade.MOUSE_BUTTON_LEFT:
                 self.sword_active = False
@@ -222,10 +225,11 @@ class GameView(arcade.View):
                 self.mouse_press = False
     
     
-            
+         
     
     
-            
+        
+
 
             
     
@@ -272,13 +276,14 @@ class GameView(arcade.View):
         coins_to_hit = arcade.check_for_collision_with_list(self.player_sprite, self.coin_list)
         for coin in coins_to_hit:
             coin.remove_from_sprite_lists()
-            arcade.play_sound(self.sound)
+            arcade.play_sound(self.sound_coin)
         
         #Check lavas hit
         if arcade.check_for_collision_with_list(self.player_sprite, self.lava_list):
         
             self.player_sprite.center_x = self.start_x  # Reset X
             self.player_sprite.center_y = self.start_y  # Reset Y
+            arcade.play_sound(self.sound_gameover)
             
         
         #Check blobs hit
@@ -286,16 +291,28 @@ class GameView(arcade.View):
         
             self.player_sprite.center_x = self.start_x  # Reset X
             self.player_sprite.center_y = self.start_y  # Reset Y
+            arcade.play_sound(self.sound_gameover)
 
         if arcade.check_for_collision_with_list(self.player_sword, self.blob_list) and self.sword_active:
             self.blob_list.remove(blob)
+            arcade.play_sound(self.sound_blob)
         
+       
         #Sword
-        
+        Vecteur_sword=arcade.Vec2(self.Vecteur[0] - self.player_sprite.center_x,self.Vecteur[1] - self.player_sprite.center_y)
+       
+        Vecteur_sword.normalize()
+        pointx: float
+        pointy: float
+        pointx = self.player_sprite.center_x + Vecteur_sword[0]
+        pointy = self.player_sprite.center_y + Vecteur_sword[1] 
+
         if self.sword_active == True:
             
             self.player_sword.center_x = self.player_sprite.center_x + 30 # Adjust position
             self.player_sword.center_y = self.player_sprite.center_y 
+
+            
             
             
 
