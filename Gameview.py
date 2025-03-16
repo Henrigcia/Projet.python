@@ -286,6 +286,9 @@ class GameView(arcade.View):
         
             self.player_sprite.center_x = self.start_x  # Reset X
             self.player_sprite.center_y = self.start_y  # Reset Y
+
+        if arcade.check_for_collision_with_list(self.player_sword, self.blob_list) and self.sword_active:
+            self.blob_list.remove(blob)
         
         #Sword
         
