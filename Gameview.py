@@ -1,5 +1,7 @@
 import arcade
 import os
+import math
+
 
 PLAYER_MOVEMENT_SPEED = 8
 PLAYER_GRAVITY = 1
@@ -37,7 +39,7 @@ class GameView(arcade.View):
     player_sword: arcade.Sprite
     sword_active: bool
     sword_list: arcade.SpriteList[arcade.Sprite]
-    
+    Vecteur: arcade.Vec3
     
 
     def __init__(self) -> None:
@@ -69,6 +71,8 @@ class GameView(arcade.View):
 
         max_x = GRID_PIXEL_SIZE * self.width 
         max_y = GRID_PIXEL_SIZE * self.height 
+
+        self.Vecteur=arcade.Vec3(0,0)
 
         
 
@@ -209,6 +213,12 @@ class GameView(arcade.View):
     def on_mouse_press(self, x: int, y: int, button: int, modifiers: int) -> None:
         """Called when the user presses a key on the mouse"""
         self.Vecteur = self.camera.unproject((x,y))
+
+        self.angle = math.atan2((self.Vecteur[0]-self.player_sprite.center_x),(self.Vecteur[1]-self.player_sprite.center_y))
+        
+        self.angle_degrees = math.degrees(self.angle)
+        self.player_sword.angle = self.angle_degrees - 45
+
         match button: 
             case arcade.MOUSE_BUTTON_LEFT:
                 self.sword_active = True
@@ -282,7 +292,7 @@ class GameView(arcade.View):
         if arcade.check_for_collision_with_list(self.player_sprite, self.lava_list):
         
             self.player_sprite.center_x = self.start_x  # Reset X
-            self.player_sprite.center_y = self.start_y  # Reset Y
+            self.player_sprite.center_y = self.start_y -150 # Reset Y
             arcade.play_sound(self.sound_gameover)
             
         
@@ -290,7 +300,7 @@ class GameView(arcade.View):
         if arcade.check_for_collision_with_list(self.player_sprite, self.blob_list):
         
             self.player_sprite.center_x = self.start_x  # Reset X
-            self.player_sprite.center_y = self.start_y  # Reset Y
+            self.player_sprite.center_y = self.start_y -150 # Reset Y
             arcade.play_sound(self.sound_gameover)
 
         if arcade.check_for_collision_with_list(self.player_sword, self.blob_list) and self.sword_active:
@@ -301,16 +311,15 @@ class GameView(arcade.View):
         #Sword
         Vecteur_sword=arcade.Vec2(self.Vecteur[0] - self.player_sprite.center_x,self.Vecteur[1] - self.player_sprite.center_y)
        
-        Vecteur_sword.normalize()
-        pointx: float
-        pointy: float
-        pointx = self.player_sprite.center_x + Vecteur_sword[0]
-        pointy = self.player_sprite.center_y + Vecteur_sword[1] 
+        Vecteur_sword = Vecteur_sword.normalize()*16
+        self.pointx: float
+        self.pointy: float
+        self.pointx = self.player_sprite.center_x + Vecteur_sword[0]
+        self.pointy = self.player_sprite.center_y + Vecteur_sword[1]           
+        self.player_sword.center_x = self.pointx  
+        self.player_sword.center_y = self.pointy -15
 
-        if self.sword_active == True:
             
-            self.player_sword.center_x = self.player_sprite.center_x + 30 # Adjust position
-            self.player_sword.center_y = self.player_sprite.center_y 
 
             
             
