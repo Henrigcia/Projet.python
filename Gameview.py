@@ -2,6 +2,8 @@ import arcade
 import os
 import math
 
+import arcade.camera.camera_2d
+
 
 PLAYER_MOVEMENT_SPEED = 8
 PLAYER_GRAVITY = 1
@@ -35,11 +37,19 @@ class GameView(arcade.View):
     camera: arcade.camera.Camera2D
     sound : arcade.Sound
     sound_2 : arcade.Sound
-
+    camera2 : arcade.camera.Camera2D
+    #Camera for coins
     player_sword: arcade.Sprite
     sword_active: bool
     sword_list: arcade.SpriteList[arcade.Sprite]
     Vecteur: arcade.Vec3
+    sortie : arcade.Sprite
+    next_map : str
+    #Map
+    score : int       
+    #Variable for the score
+
+
     
 
     def __init__(self) -> None:
@@ -47,10 +57,14 @@ class GameView(arcade.View):
         super().__init__()
         self.right_pressed = False
         self.left_pressed = False
-        self.sound_coin=arcade.Sound(":resources:sounds/coin1.wav")
-        self.sound_jump=arcade.Sound(":resources:sounds/jump1.wav" )
-        self.sound_blob=arcade.Sound(":resources:/sounds/explosion1.wav")
-        self.sound_gameover=arcade.Sound(":resources:/sounds/gameover5.wav")
+        self.sound_coin = arcade.Sound(":resources:sounds/coin1.wav")
+        self.sound_jump = arcade.Sound(":resources:sounds/jump1.wav" )
+        self.sound_blob = arcade.Sound(":resources:/sounds/explosion1.wav")
+        self.sound_gameover = arcade.Sound(":resources:/sounds/gameover5.wav")
+        self.score = 0
+        #Initialisation for the score
+        self.next_map = "gr"
+        self.sortie = arcade.Sprite(":resources:/images/tiles/signExit.png") 
 
         # Choose a nice comfy background color
         self.background_color = arcade.csscolor.LIGHT_BLUE
@@ -67,6 +81,7 @@ class GameView(arcade.View):
         self.physics_engine.disable_multi_jump()
         self.physics_engine.can_jump()
         self.camera = arcade.camera.Camera2D()
+        self.camera2 = arcade.camera.Camera2D()
         
 
         max_x = GRID_PIXEL_SIZE * self.width 
@@ -77,8 +92,8 @@ class GameView(arcade.View):
         
 
     def load_map(self, filename="maps/map1.txt"):
+        self.wall_list.append(self.sortie)
         """Charge la carte depuis un fichier texte et place les objets sur la scène."""
-        
         # Vérifie si le fichier existe
         if not os.path.exists(filename):
             print(f"Erreur : Le fichier {filename} est introuvable !")
@@ -86,8 +101,18 @@ class GameView(arcade.View):
 
         with open(filename, "r", encoding="utf-8") as file:
             lines = file.readlines()
+            
 
-        lines = lines[3:-1]
+
+        #lines = lines[2:-1]
+
+        #lmap = lines[0]
+        # next-map: 
+        #lmap.split(" ", 1)
+
+
+
+        #lines = lines[2:]
 
         lines.reverse()  # Reverse line order (Arcade places (0,0) at the bottom)
 
@@ -121,6 +146,7 @@ class GameView(arcade.View):
                         self.lava_list.append(sprite)  # add lava
                     else:  
                         self.wall_list.append(sprite)  # add a wall
+    
 
 
                         
@@ -155,21 +181,19 @@ class GameView(arcade.View):
 
     def on_draw(self) -> None:
         """Render the screen."""
-        self.clear() # always start with self.clear()
-        self.camera.use()
-        self.wall_list.draw()
-        self.lava_list.draw()
-        self.blob_list.draw()
-        self.coin_list.draw()
-        self.player_sprite_list.draw()
+        self.clear()                                    # always start with self.clear()
+        with self.camera.activate():
+            self.wall_list.draw()
+            self.lava_list.draw()
+            self.blob_list.draw()
+            self.coin_list.draw()
+            self.player_sprite_list.draw()
+            if self.sword_active:   
+                self.sword_list.draw()
+        with self.camera2.activate():
+            text = arcade.Text(f"{self.score} Score : ", 0 ,0, font_size = 25)     #Function for the score
+        text.draw()
 
-        if self.sword_active:   
-            self.sword_list.draw()
-
-        
-        
-        
-        #some_sprite_list.draw_hit_boxes()
 
     def update_movement(self):
         speed =0
@@ -287,10 +311,12 @@ class GameView(arcade.View):
         for coin in coins_to_hit:
             coin.remove_from_sprite_lists()
             arcade.play_sound(self.sound_coin)
+            self.score += 1
+
         
         #Check lavas hit
         if arcade.check_for_collision_with_list(self.player_sprite, self.lava_list):
-        
+            self.score = 0
             self.player_sprite.center_x = self.start_x  # Reset X
             self.player_sprite.center_y = self.start_y -150 # Reset Y
             arcade.play_sound(self.sound_gameover)
@@ -298,7 +324,7 @@ class GameView(arcade.View):
         
         #Check blobs hit
         if arcade.check_for_collision_with_list(self.player_sprite, self.blob_list):
-        
+            self.score = 0
             self.player_sprite.center_x = self.start_x  # Reset X
             self.player_sprite.center_y = self.start_y -150 # Reset Y
             arcade.play_sound(self.sound_gameover)
@@ -318,6 +344,9 @@ class GameView(arcade.View):
         self.pointy = self.player_sprite.center_y + Vecteur_sword[1]           
         self.player_sword.center_x = self.pointx  
         self.player_sword.center_y = self.pointy -15
+
+        #if arcade.check_for_collision_with_list(self.player_sprite, self.wall_list) :
+            #self.load_map(self.next_map )
 
             
 
