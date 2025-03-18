@@ -191,7 +191,7 @@ class GameView(arcade.View):
             if self.sword_active:   
                 self.sword_list.draw()
         with self.camera2.activate():
-            text = arcade.Text(f"{self.score} Score : ", 0 ,0, font_size = 25)     #Function for the score
+            text = arcade.Text(f" Score : {self.score}", 0 ,0, font_size = 25)     #Function for the score
         text.draw()
 
 
