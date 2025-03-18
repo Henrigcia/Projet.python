@@ -14,9 +14,14 @@ Vous pouvez ajouter vos propres tâches si vous le jugez utile (p.ex. avec une d
 * [x] Découverte d'Arcade                                            120
 * [x] Meilleure gestion du clavier                                   100
 * [x] Meilleure gestion de la caméra                                 180
-* [x] `README.md` à jour, expliquant comment jouer                    ??
-* [x] Charger la map depuis un fichier                               180
-* [x]
+* [ ] `README.md` à jour, expliquant comment jouer                    ??
+* [x] Charger la map depuis un fichier                               120
+* [x] Implémenter la lave                                             20
+* [x] Blobs: mouvement                                               150
+* [x] Epée: apparition et dégats                                     200
+* [x] Epée: angle et placement                                        50
+* [ ] Score: pièces                                                   ??
+* [ ] Niveaux                                                         ??
 
 ---
 
@@ -33,8 +38,6 @@ Par exemple :
 ## Suivi
 
 ### Semaine 2
-
-Décrire ici ce que vous avez fait en semaine 2.
 
 ### Semaine 3
 
