@@ -1,6 +1,6 @@
 import arcade 
 import os
-from Gameview import GameView
+from bat import GameView
 # Constants
 WINDOW_WIDTH = 1280
 WINDOW_HEIGHT = 720
