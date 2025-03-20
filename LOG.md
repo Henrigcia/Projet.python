@@ -22,6 +22,7 @@ Vous pouvez ajouter vos propres tâches si vous le jugez utile (p.ex. avec une d
 * [x] Epée: angle et placement                                        50
 * [ ] Score: pièces                                                   ??
 * [ ] Niveaux                                                         ??
+* [ ] Arc
 
 ---
 
