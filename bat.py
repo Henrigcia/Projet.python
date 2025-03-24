@@ -28,7 +28,7 @@ SYMBOLS = {
     "£": ":resources:/images/tiles/lava.png",  # No-go (lava)
     "v": "assets/kenney-voxel-items-png/kenney-extended-enemies-png/bat.png"   #Bat
 }
-  
+
 class GameView(arcade.View):
     """Main in-game view."""
     physics_engine: arcade.PhysicsEnginePlatformer
@@ -184,10 +184,6 @@ class GameView(arcade.View):
         bat : arcade.Sprite
         for bat in self.bat_list:
             bat.change_x = BAT_MOVEMENT_SPEED    #Makes the bat moove
-
-
-
-
     def on_draw(self) -> None:
         """Render the screen."""
         self.clear()                                    # always start with self.clear()
@@ -297,9 +293,17 @@ class GameView(arcade.View):
                     blob.scale_x *=-1                                              
                 blob.center_x += BLOB_SIZE      # restore x
                 blob.center_y += 1              # restore y
-                #Bat mouvement
+            
+            
+        #Bat mouvement
         for bat in self.bat_list:
-            bat.center_x += bat.change_x  
+            bat.center_x += bat.change_x
+
+
+
+            
+            
+
             
             
                      
@@ -342,6 +346,7 @@ class GameView(arcade.View):
         if arcade.check_for_collision_with_list(self.player_sword, self.blob_list) and self.sword_active:
             self.blob_list.remove(blob)
             arcade.play_sound(self.sound_blob)
+        
         #Kills the bat
         for bat in self.bat_list :
             if arcade.check_for_collision_with_list(self.player_sword, self.bat_list) and self.sword_active :
@@ -372,23 +377,7 @@ class GameView(arcade.View):
         self.player_sword.center_y = self.pointy -15
 
         #if arcade.check_for_collision_with_list(self.player_sprite, self.wall_list) :
-            #self.load_map(self.next_map )
-
-            
-
-            
-            
-            
-
-            
-         
-            
-
-
-
-  
-                
-
+            #self.load_map(self.next_map )       
     def pan_camera_to_player(self, panning_fraction: float = 2.0):
         self.camera.position = arcade.math.smerp_2d(
             self.camera.position,

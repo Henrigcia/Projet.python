@@ -1,9 +1,9 @@
 import arcade 
 import os
-from bat import GameView
+from modif import *
 # Constants
 WINDOW_WIDTH = 1280
-WINDOW_HEIGHT = 720
+WINDOW_HEIGHT = 750
 WINDOW_TITLE = "Platformer"
 
 
