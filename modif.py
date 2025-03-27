@@ -26,6 +26,7 @@ BAT_ANGLE_CHANGE_SCALE = 20                 # Change facfor for velocity directi
 BAT_FRAMES = 60                             # Frequency to distort velocity vector (each xxx frames)
 BAT_SIZE = 30
 
+
 SYMBOLS = {
 
     "=": ":resources:images/tiles/grassMid.png",  # Wall
@@ -35,7 +36,8 @@ SYMBOLS = {
     "o": ":resources:/images/enemies/slimeBlue.png",  # Monster (slime)
     "S": ":resources:/images/animated_characters/robot/robot_idle.png",  # Start
     "£": ":resources:/images/tiles/lava.png",  # No-go (lava)
-    "v": "assets/kenney-voxel-items-png/kenney-extended-enemies-png/bat.png"   #Bat
+    "v": "assets/kenney-voxel-items-png/kenney-extended-enemies-png/bat.png",   #Bat
+    "E": ":resources:/images/tiles/signExit.png", #The sign exit
 }
 
 class Monster(arcade.Sprite):                                                   # The base level class that describes all game monsters behavoirs
@@ -134,6 +136,7 @@ class GameView(arcade.View):                                                    
     sound_2 : arcade.Sound
     camera2 : arcade.camera.Camera2D                                            #Camera for coins
 
+
     player_sword: arcade.Sprite
     sword_active: bool
     sword_list: arcade.SpriteList[arcade.Sprite]
@@ -146,9 +149,10 @@ class GameView(arcade.View):                                                    
     change_weapon: bool
     weapon_active: bool
 
-    sortie : arcade.Sprite
+
     next_map : str                                                              #Map
     score : int                                                                 #Variable for the score
+    sortie_list : arcade.SpriteList[arcade.Sprite]                               #Exit sign                                                       
    
 
     
@@ -164,8 +168,9 @@ class GameView(arcade.View):                                                    
         self.sound_gameover = arcade.Sound(":resources:/sounds/gameover5.wav")
         self.score = 0
         #Initialisation for the score
-        #self.next_map = "gr"
-        self.sortie = arcade.Sprite(":resources:/images/tiles/signExit.png") 
+        self.next_map = "maps/map2.txt"
+        
+        self.sortie = arcade.Sprite(":resources:/images/tiles/signExit.png") #Init. for the sign
 
         # Choose a nice comfy background color
         self.background_color = arcade.csscolor.LIGHT_BLUE
@@ -192,7 +197,11 @@ class GameView(arcade.View):                                                    
         
 
     def load_map(self, filename="maps/map1.txt"):
-        self.wall_list.append(self.sortie)
+        self.monsters_list.clear()             #clears all the sprites available
+        self.wall_list.clear()
+        self.lava_list.clear()
+        self.sortie_list.clear()
+        #self.wall_list.append(self.sortie)
  
         # Vérifie si le fichier existe
         if not os.path.exists(filename):
@@ -204,7 +213,7 @@ class GameView(arcade.View):                                                    
             
 
 
-        lines = lines[3:-2]
+        lines = lines[4:-2]
 
         #lmap = lines[0]
         # next-map: 
@@ -267,13 +276,15 @@ class GameView(arcade.View):                                                    
                     
                     elif char == "£":                          # add Lava to lava list
                         self.lava_list.append(s) 
-
+                    elif char == "E":
+                        self.sortie_list.append(s)
+                        
                     else:  
                         self.wall_list.append(s)               # add a wall to walls list
                         
-    def setup(self) -> None:   
-
+    def setup(self) -> None:
         
+
         self.wall_list = arcade.SpriteList(use_spatial_hash=True)
         # self.blob_list = arcade.SpriteList(use_spatial_hash=True)
         self.lava_list = arcade.SpriteList(use_spatial_hash=True)
@@ -281,11 +292,14 @@ class GameView(arcade.View):                                                    
         self.player_sprite_list = arcade.SpriteList(use_spatial_hash=True)
         # self.bat_list = arcade.SpriteList(use_spatial_hash=True)
         self.monsters_list = arcade.SpriteList(use_spatial_hash=True)
+        self.sortie_list = arcade.SpriteList(use_spatial_hash=True)
+
 
 
         self.load_map("maps/map1.txt")
         
         self.player_sprite_list.append(self.player_sprite)
+        
 
         self.player_sword: arcade.Sprite = arcade.Sprite(                       # Setup sword
             "assets/kenney-voxel-items-png/sword_silver.png",
@@ -316,6 +330,7 @@ class GameView(arcade.View):                                                    
         self.clear()                                                            # always start with self.clear()
         with self.camera.activate():
 
+            self.sortie_list.draw()
             self.wall_list.draw()
             self.lava_list.draw()
             self.monsters_list.draw()
@@ -432,6 +447,14 @@ class GameView(arcade.View):                                                    
                 h.kill_monster()
             else:
                 self.reset_game()
+        if arcade.check_for_collision_with_list(self.player_sprite, self.sortie_list):
+            self.setup()
+            self.load_map(self.next_map)
+            
+
+            
+            
+                            
  
         # if arcade.check_for_collision_with_list(self.player_sword, self.blob_list) and self.sword_active:
         #     self.blob_list.remove(Blob)

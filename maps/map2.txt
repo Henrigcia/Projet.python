@@ -1,5 +1,6 @@
 width: 20
 height: 6
+next-map: map3.txt
 ---
  *  
  -       
