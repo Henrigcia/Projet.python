@@ -137,7 +137,14 @@ class GameView(arcade.View):                                                    
     player_sword: arcade.Sprite
     sword_active: bool
     sword_list: arcade.SpriteList[arcade.Sprite]
+    player_bow: arcade.Sprite
+    bow_active: bool
+    bow_list: arcade.SpriteList[arcade.Sprite]
+    arrow_list: arcade.SpriteList[arcade.Sprite]
+    arrow: arcade.Sprite
     Vecteur: arcade.Vec3
+    change_weapon: bool
+    weapon_active: bool
 
     sortie : arcade.Sprite
     next_map : str                                                              #Map
@@ -174,11 +181,13 @@ class GameView(arcade.View):                                                    
         self.physics_engine.can_jump()
         self.camera = arcade.camera.Camera2D()
         self.camera2 = arcade.camera.Camera2D()
+        self.angle_degrees = 0.0
         
         max_x = GRID_PIXEL_SIZE * self.width 
         max_y = GRID_PIXEL_SIZE * self.height 
 
         self.Vecteur=arcade.Vec3(0,0)
+        self.Vecteur_sword=arcade.Vec2(0,0)
 
         
 
@@ -195,7 +204,7 @@ class GameView(arcade.View):                                                    
             
 
 
-        #lines = lines[2:-1]
+        lines = lines[3:-2]
 
         #lmap = lines[0]
         # next-map: 
@@ -286,6 +295,22 @@ class GameView(arcade.View):                                                    
         self.sword_list = arcade.SpriteList(use_spatial_hash=True)
         self.sword_list.append(self.player_sword)
 
+        self.player_bow: arcade.Sprite = arcade.Sprite(
+            "assets/kenney-voxel-items-png/bowArrow.png",
+            scale=0.5 * 0.7
+            )
+        self.arrow: arcade.Sprite = arcade.Sprite(
+            "assets/kenney-voxel-items-png/arrow.png",
+            scale= 0.5 * 0.7
+        )
+        self.change_weapon = True
+        self.weapon_active = False
+        self.bow_active = False
+        self.bow_list = arcade.SpriteList(use_spatial_hash=True)
+        self.bow_list.append(self.player_bow)
+        self.arrow_list=arcade.SpriteList(use_spatial_hash=True)
+        self.arrow_list.append(self.arrow)
+
 
     def on_draw(self) -> None:                                                  # Render the sreen
         self.clear()                                                            # always start with self.clear()
@@ -298,6 +323,8 @@ class GameView(arcade.View):                                                    
             self.player_sprite_list.draw()
             if self.sword_active:   
                 self.sword_list.draw()
+            if self.bow_active:
+                self.bow_list.draw()
                 
         with self.camera2.activate():
             text = arcade.Text(f" Score : {self.score}", 0 ,0, font_size = 25)     #Function for the score
@@ -346,24 +373,27 @@ class GameView(arcade.View):                                                    
     def on_mouse_press(self, x: int, y: int, button: int, modifiers: int) -> None:
         """Called when the user presses a key on the mouse"""
         self.Vecteur = self.camera.unproject((x,y))
-
         self.angle = math.atan2((self.Vecteur[0]-self.player_sprite.center_x),(self.Vecteur[1]-self.player_sprite.center_y))
-        
         self.angle_degrees = math.degrees(self.angle)
-        self.player_sword.angle = self.angle_degrees - 45
+        self.Vecteur_sword=arcade.Vec2(self.Vecteur[0] - self.player_sprite.center_x,self.Vecteur[1] - self.player_sprite.center_y)      
+        self.Vecteur_sword = self.Vecteur_sword.normalize()*16
+        
+       
 
         match button: 
             case arcade.MOUSE_BUTTON_LEFT:
-                self.sword_active = True
+                self.weapon_active = True
             case arcade.MOUSE_BUTTON_RIGHT:
-                self.mouse_press = True 
+                self.change_weapon = not self.change_weapon
+           
+            
     
     def on_mouse_release(self, x: int, y: int, button: int, modifiers: int) -> None:
         """Called when the user presses a key on the mouse"""
 
         match button: 
             case arcade.MOUSE_BUTTON_LEFT:
-                self.sword_active = False
+                self.weapon_active = False
             case arcade.MOUSE_BUTTON_RIGHT:
                 self.mouse_press = False
 
@@ -396,7 +426,7 @@ class GameView(arcade.View):                                                    
             
         
         #Check monsters hit
-        hits = arcade.check_for_collision_with_list(self.player_sprite, self.monsters_list)
+        hits = arcade.check_for_collision_with_list(self.player_sword, self.monsters_list)
         for h in hits:
             if self.sword_active:
                 h.kill_monster()
@@ -426,15 +456,35 @@ class GameView(arcade.View):                                                    
  
        
         #Sword
-        Vecteur_sword=arcade.Vec2(self.Vecteur[0] - self.player_sprite.center_x,self.Vecteur[1] - self.player_sprite.center_y)
        
-        Vecteur_sword = Vecteur_sword.normalize()*16
         self.pointx: float
         self.pointy: float
-        self.pointx = self.player_sprite.center_x + Vecteur_sword[0]
-        self.pointy = self.player_sprite.center_y + Vecteur_sword[1]           
-        self.player_sword.center_x = self.pointx  
-        self.player_sword.center_y = self.pointy -15
+        self.pointx = self.player_sprite.center_x + self.Vecteur_sword[0]
+        self.pointy = self.player_sprite.center_y + self.Vecteur_sword[1]  
+        
+        self.player_sword.angle = self.angle_degrees - 45         
+        if self.angle_degrees>=0:
+            self.player_sword.center_x = self.pointx + 15
+            
+        elif self.angle_degrees<0:
+            self.player_sword.center_x = self.pointx -15
+        self.player_sword.center_y = self.pointy -20
+
+        #Bow
+        self.player_bow.angle = self.angle_degrees - 45
+        if self.angle_degrees>=0:
+            self.player_bow.center_x = self.pointx + 15
+            
+        elif self.angle_degrees<0:
+            self.player_bow.center_x = self.pointx -15
+
+        self.player_bow.center_y = self.pointy -25
+
+        if self.change_weapon:
+            self.sword_active = self.weapon_active
+        else: 
+            self.bow_active = self.weapon_active
+
 
         #if arcade.check_for_collision_with_list(self.player_sprite, self.wall_list) :
             #self.load_map(self.next_map )       
