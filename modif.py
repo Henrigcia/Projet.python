@@ -26,6 +26,9 @@ BAT_ANGLE_CHANGE_SCALE = 20                 # Change facfor for velocity directi
 BAT_FRAMES = 60                             # Frequency to distort velocity vector (each xxx frames)
 BAT_SIZE = 30
 
+ARROW_GRAVITY = 10
+ARROW_SPEED = 12
+
 
 SYMBOLS = {
 
@@ -122,6 +125,7 @@ class Bat(Monster):                                                             
 class GameView(arcade.View):                                                    # The main game class that ihertits View
 
     physics_engine: arcade.PhysicsEnginePlatformer
+  
 
     player_sprite : arcade.Sprite
     player_sprite_list : arcade.SpriteList[arcade.Sprite]
@@ -146,8 +150,10 @@ class GameView(arcade.View):                                                    
     arrow_list: arcade.SpriteList[arcade.Sprite]
     arrow: arcade.Sprite
     Vecteur: arcade.Vec3
+    Vector_arrow: arcade.Vec2= (0,0)
     change_weapon: bool
     weapon_active: bool
+    arrow_active: bool = False
 
 
     next_map : str                                                              #Map
@@ -196,6 +202,8 @@ class GameView(arcade.View):                                                    
 
         
 
+    def load_map(self, filename="maps/map3.txt"):
+        self.wall_list.append(self.sortie)
     def load_map(self, filename="maps/map1.txt"):
         self.monsters_list.clear()             #clears all the sprites available
         self.wall_list.clear()
@@ -296,7 +304,8 @@ class GameView(arcade.View):                                                    
 
 
 
-        self.load_map("maps/map1.txt")
+
+        self.load_map("maps/map3.txt")
         
         self.player_sprite_list.append(self.player_sprite)
         
@@ -340,6 +349,9 @@ class GameView(arcade.View):                                                    
                 self.sword_list.draw()
             if self.bow_active:
                 self.bow_list.draw()
+            if self.arrow_active:
+                 self.arrow_list.draw()   
+              
                 
         with self.camera2.activate():
             text = arcade.Text(f" Score : {self.score}", 0 ,0, font_size = 25)     #Function for the score
@@ -392,14 +404,21 @@ class GameView(arcade.View):                                                    
         self.angle_degrees = math.degrees(self.angle)
         self.Vecteur_sword=arcade.Vec2(self.Vecteur[0] - self.player_sprite.center_x,self.Vecteur[1] - self.player_sprite.center_y)      
         self.Vecteur_sword = self.Vecteur_sword.normalize()*16
-        
-       
+        self.arrow.center_x = self.player_bow.center_x
+        self.arrow.center_y = self.player_bow.center_y          
+        self.arrow.angle = self.player_bow.angle
+        self.Vector_arrow = self.Vecteur_sword.normalize()*ARROW_SPEED
+        self.arrow.change_x = self.Vector_arrow.x
+        self.arrow.change_y = self.Vector_arrow.y
 
         match button: 
             case arcade.MOUSE_BUTTON_LEFT:
                 self.weapon_active = True
             case arcade.MOUSE_BUTTON_RIGHT:
                 self.change_weapon = not self.change_weapon
+       
+                
+         
            
             
     
@@ -507,6 +526,15 @@ class GameView(arcade.View):                                                    
             self.sword_active = self.weapon_active
         else: 
             self.bow_active = self.weapon_active
+            self.arrow_active = self.weapon_active
+
+        #Arrow
+        self.arrow.change_y -= ARROW_GRAVITY * delta_time
+        self.arrow.angle += 1
+        
+        self.arrow_list.update()
+         
+        
 
 
         #if arcade.check_for_collision_with_list(self.player_sprite, self.wall_list) :
