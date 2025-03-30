@@ -9,7 +9,7 @@ height: 12
 ---                 v
                            
 ---       v                
-S                          oooooooooooooooooo 
+S E                         oooooooooooooooooo 
 ====£££££££££££££££££££££££==================
 ---
 

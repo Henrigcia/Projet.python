@@ -29,6 +29,7 @@ BAT_SIZE = 30
 ARROW_GRAVITY = 10
 ARROW_SPEED = 12
 
+FIRST_MAP = "maps/map1.txt"                 # First level map file; the each next level is referenced in the map file itself
 
 SYMBOLS = {
 
@@ -126,10 +127,6 @@ class GameView(arcade.View):                                                    
 
     physics_engine: arcade.PhysicsEnginePlatformer
   
-
-    player_sprite : arcade.Sprite
-    player_sprite_list : arcade.SpriteList[arcade.Sprite]
-
     wall_list : arcade.SpriteList[arcade.Sprite]
     lava_list: arcade.SpriteList[arcade.Sprite]
     coin_list : arcade.SpriteList[arcade.Sprite]
@@ -138,9 +135,11 @@ class GameView(arcade.View):                                                    
     camera : arcade.camera.Camera2D
     sound : arcade.Sound
     sound_2 : arcade.Sound
-    camera2 : arcade.camera.Camera2D                                            #Camera for coins
+    camera2 : arcade.camera.Camera2D                                            # Camera for coins
 
 
+    player_sprite : arcade.Sprite                                               # Everything that relates to the player and weapons
+    player_sprite_list : arcade.SpriteList[arcade.Sprite]
     player_sword: arcade.Sprite
     sword_active: bool
     sword_list: arcade.SpriteList[arcade.Sprite]
@@ -155,17 +154,16 @@ class GameView(arcade.View):                                                    
     weapon_active: bool
     arrow_active: bool = False
 
-
-    next_map : str                                                              #Map
-    score : int                                                                 #Variable for the score
+    next_map : str                                                              # Ref to the next level map
     sortie_list : arcade.SpriteList[arcade.Sprite]                               #Exit sign                                                       
+    score : int                                                                 #Variable for the score
    
 
-    
 
     def __init__(self) -> None:
         # Magical incantion: initialize the Arcade view
         super().__init__()
+
         self.right_pressed = False
         self.left_pressed = False
         self.sound_coin = arcade.Sound(":resources:sounds/coin1.wav")
@@ -173,23 +171,17 @@ class GameView(arcade.View):                                                    
         self.sound_blob = arcade.Sound(":resources:/sounds/explosion1.wav")
         self.sound_gameover = arcade.Sound(":resources:/sounds/gameover5.wav")
         self.score = 0
-        #Initialisation for the score
-        self.next_map = "maps/map2.txt"
-        
-        self.sortie = arcade.Sprite(":resources:/images/tiles/signExit.png") #Init. for the sign
+
+#        self.sortie = arcade.Sprite(":resources:/images/tiles/signExit.png") #Init. for the sign
 
         # Choose a nice comfy background color
         self.background_color = arcade.csscolor.LIGHT_BLUE
         
-        # Setup our game
-        self.setup()
-        self.physics_engine = arcade.PhysicsEnginePlatformer(
-            self.player_sprite,
-            walls=self.wall_list,
-            gravity_constant=PLAYER_GRAVITY
-        )
-        self.physics_engine.disable_multi_jump()
-        self.physics_engine.can_jump()
+        self.setup()                                                                        # Setup our game for the first time
+
+        self.load_level(FIRST_MAP)
+
+
         self.camera = arcade.camera.Camera2D()
         self.camera2 = arcade.camera.Camera2D()
         self.angle_degrees = 0.0
@@ -197,42 +189,70 @@ class GameView(arcade.View):                                                    
         max_x = GRID_PIXEL_SIZE * self.width 
         max_y = GRID_PIXEL_SIZE * self.height 
 
+
+
+
+    def setup(self) -> None:
+        
+        self.player_sprite_list = arcade.SpriteList(use_spatial_hash=True)      # Create all lists
+        self.wall_list = arcade.SpriteList(use_spatial_hash=True)               
+        self.lava_list = arcade.SpriteList(use_spatial_hash=True)
+        self.coin_list = arcade.SpriteList(use_spatial_hash=True)
+        self.monsters_list = arcade.SpriteList(use_spatial_hash=True)
+        self.sortie_list = arcade.SpriteList(use_spatial_hash=True)
+
+        self.player_sword: arcade.Sprite = arcade.Sprite(                       # Setup sword
+            "assets/kenney-voxel-items-png/sword_silver.png",
+            scale=0.5 * 0.7
+            )
+        self.sword_list = arcade.SpriteList(use_spatial_hash=True)
+        self.sword_list.append(self.player_sword)
+        self.sword_active = False
+
+        self.player_bow: arcade.Sprite = arcade.Sprite(                         # Setup bow
+            "assets/kenney-voxel-items-png/bowArrow.png",
+            scale=0.5 * 0.7
+            )
+        self.bow_list = arcade.SpriteList(use_spatial_hash=True)
+        self.bow_list.append(self.player_bow)
+        self.bow_active = False
+
+        self.arrow: arcade.Sprite = arcade.Sprite(                              # Setup arrow
+            "assets/kenney-voxel-items-png/arrow.png",
+            scale= 0.5 * 0.7
+        )
+        self.arrow_list=arcade.SpriteList(use_spatial_hash=True)
+        self.arrow_list.append(self.arrow)
+
+        self.change_weapon = True                                               # Setup weapons
+        self.weapon_active = False
         self.Vecteur=arcade.Vec3(0,0)
         self.Vecteur_sword=arcade.Vec2(0,0)
 
-        
 
-    def load_map(self, filename="maps/map3.txt"):
-        self.wall_list.append(self.sortie)
-    def load_map(self, filename="maps/map1.txt"):
-        self.monsters_list.clear()             #clears all the sprites available
+    def load_level(self, filename):                             # This will initiate a new game level    
+
+        self.monsters_list.clear()                              # Clears all sprites that will be loaded from the map
         self.wall_list.clear()
         self.lava_list.clear()
         self.sortie_list.clear()
-        #self.wall_list.append(self.sortie)
+        self.player_sprite_list.clear()
  
         # Vérifie si le fichier existe
         if not os.path.exists(filename):
-            print(f"Erreur : Le fichier {filename} est introuvable !")
+            print(f"Erreur : Le fichier {filename} est introuvable !")       # TO-DO: handle correctly if file doesn't exixt
             return  
 
         with open(filename, "r", encoding="utf-8") as file:
             lines = file.readlines()
             
+                                                                # TO-DO: to handle incorrect files, e.g. no 3rd line, etc
 
+        self.next_map = lines[2].split(":")[-1].strip()         # The 3rd line in the file will have the reference to the next level, e.g. "next-map: map2.txt"
 
-        lines = lines[4:-2]
+        lines = lines[3:-1]                                     # Ignore first 3 lines and the very last one for the map
 
-        #lmap = lines[0]
-        # next-map: 
-        #lmap.split(" ", 1)
-
-
-
-        #lines = lines[2:]
-
-        lines.reverse()  # Reverse line order (Arcade places (0,0) at the bottom)
-
+        lines.reverse()                                         # Reverse line order (Arcade places (0,0) at the bottom)
 
         map_height = len(lines)
         tile_size = 64
@@ -285,54 +305,20 @@ class GameView(arcade.View):                                                    
                     elif char == "£":                          # add Lava to lava list
                         self.lava_list.append(s) 
                     elif char == "E":
-                        self.sortie_list.append(s)
+                        self.sortie_list.append(s)             # add Exit to the list
                         
                     else:  
                         self.wall_list.append(s)               # add a wall to walls list
-                        
-    def setup(self) -> None:
-        
 
-        self.wall_list = arcade.SpriteList(use_spatial_hash=True)
-        # self.blob_list = arcade.SpriteList(use_spatial_hash=True)
-        self.lava_list = arcade.SpriteList(use_spatial_hash=True)
-        self.coin_list = arcade.SpriteList(use_spatial_hash=True)
-        self.player_sprite_list = arcade.SpriteList(use_spatial_hash=True)
-        # self.bat_list = arcade.SpriteList(use_spatial_hash=True)
-        self.monsters_list = arcade.SpriteList(use_spatial_hash=True)
-        self.sortie_list = arcade.SpriteList(use_spatial_hash=True)
-
-
-
-
-        self.load_map("maps/map3.txt")
-        
-        self.player_sprite_list.append(self.player_sprite)
-        
-
-        self.player_sword: arcade.Sprite = arcade.Sprite(                       # Setup sword
-            "assets/kenney-voxel-items-png/sword_silver.png",
-            scale=0.5 * 0.7
-            )
-        self.sword_active = False
-        self.sword_list = arcade.SpriteList(use_spatial_hash=True)
-        self.sword_list.append(self.player_sword)
-
-        self.player_bow: arcade.Sprite = arcade.Sprite(
-            "assets/kenney-voxel-items-png/bowArrow.png",
-            scale=0.5 * 0.7
-            )
-        self.arrow: arcade.Sprite = arcade.Sprite(
-            "assets/kenney-voxel-items-png/arrow.png",
-            scale= 0.5 * 0.7
+        self.player_sprite_list.append(self.player_sprite)                      # Add player
+        self.physics_engine = arcade.PhysicsEnginePlatformer(                   # Initialize physics
+            self.player_sprite,
+            walls=self.wall_list,
+            gravity_constant=PLAYER_GRAVITY
         )
-        self.change_weapon = True
-        self.weapon_active = False
-        self.bow_active = False
-        self.bow_list = arcade.SpriteList(use_spatial_hash=True)
-        self.bow_list.append(self.player_bow)
-        self.arrow_list=arcade.SpriteList(use_spatial_hash=True)
-        self.arrow_list.append(self.arrow)
+        self.physics_engine.disable_multi_jump()
+        self.physics_engine.can_jump()
+               
 
 
     def on_draw(self) -> None:                                                  # Render the sreen
@@ -457,8 +443,12 @@ class GameView(arcade.View):                                                    
         #Check lavas hit
         if arcade.check_for_collision_with_list(self.player_sprite, self.lava_list):
            self.reset_game()
-            
-        
+
+        # Check if exit the level            
+        if arcade.check_for_collision_with_list(self.player_sprite, self.sortie_list):
+            self.load_level(self.next_map)                                                  # TO-DO: create a new method end_game() and call if next_map is blank
+
+
         #Check monsters hit
         hits = arcade.check_for_collision_with_list(self.player_sword, self.monsters_list)
         for h in hits:
@@ -466,9 +456,15 @@ class GameView(arcade.View):                                                    
                 h.kill_monster()
             else:
                 self.reset_game()
-        if arcade.check_for_collision_with_list(self.player_sprite, self.sortie_list):
-            self.setup()
-            self.load_map(self.next_map)
+        
+        for a in self.arrow_list:                                                           # Moster kills by arrows
+            hits = arcade.check_for_collision_with_list(a, self.monsters_list)
+            for h in hits:
+                if self.arrow_active:
+                    h.kill_monster()
+                    
+        
+        
             
 
             

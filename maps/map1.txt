@@ -1,6 +1,6 @@
 width: 20
 height: 6
-next-map: map2.txt
+next-map: maps/map2.txt
 ---     v
 *v    -  - 
 ---      v  -

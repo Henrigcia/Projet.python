@@ -1,11 +1,11 @@
 width: 20
 height: 6
-next-map: map3.txt
+next-map: maps/map3.txt
 ---
  *  
  -       
      o*          =
     ---          =
-S         o*     =
+S  E       o*     =
 =======£=£=£=£======
 ---
