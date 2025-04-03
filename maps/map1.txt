@@ -6,7 +6,7 @@ next-map: maps/map2.txt
 ---      v  -
      o*        *o   
     ---        -
- S   E       *o   x* 
+ S          *o   x*E 
 ======£££££=========
 ---
 

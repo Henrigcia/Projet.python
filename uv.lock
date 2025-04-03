@@ -4,7 +4,7 @@ requires-python = ">=3.13"
 
 [[package]]
 name = "arcade"
-version = "3.0.1"
+version = "3.1.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pillow" },
@@ -12,9 +12,9 @@ dependencies = [
     { name = "pymunk" },
     { name = "pytiled-parser" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/02/21/e5fdb07584f31b66b139af4722ae2a040cb5510b32c9d067d14bbeab7dd6/arcade-3.0.1.tar.gz", hash = "sha256:dd3869b1d1ca5e8cf2a50fd38f6caeac83fa88290f2692a349e6b4277247cac3", size = 41847180 }
+sdist = { url = "https://files.pythonhosted.org/packages/e1/f8/2396ef207573da297fffee4942493cd64f1028c205a62c647a891f021c81/arcade-3.1.0.tar.gz", hash = "sha256:4853e04514f8821922cacf9e0d46b35fcaa5702c2426c5bb3529ecddc419da01", size = 41849962 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ee/9a/de0062214c41966dc3587a77a0102b0f11dd18a857d884debde33cadd164/arcade-3.0.1-py3-none-any.whl", hash = "sha256:f5a93b90a6be563f87febd02779c479f6bb0521c207e123d60ef262675d0defa", size = 42516948 },
+    { url = "https://files.pythonhosted.org/packages/ad/20/ec82c2803787ab20d1c93d4834d8f49a02c67ee24746873de3bd157713a8/arcade-3.1.0-py3-none-any.whl", hash = "sha256:cbc510f6d773659315c699499b8621c5e419ba4848536f8194a679a5eb825f4a", size = 42515125 },
 ]
 
 [[package]]
@@ -154,7 +154,7 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "arcade", specifier = ">=3.0.1" }]
+requires-dist = [{ name = "arcade", specifier = ">=3.0.2" }]
 
 [package.metadata.requires-dev]
 dev = [

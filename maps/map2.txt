@@ -6,6 +6,6 @@ next-map: maps/map3.txt
  -       
      o*          =
     ---          =
-S  E       o*     =
+S         o*     E
 =======£=£=£=£======
 ---

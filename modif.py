@@ -7,21 +7,21 @@ import arcade.camera.camera_2d
 
 
 
-PLAYER_MOVEMENT_SPEED = 8
+PLAYER_MOVEMENT_SPEED = 5
 PLAYER_GRAVITY = 1
-PLAYER_JUMP_SPEED = 18
+PLAYER_JUMP_SPEED = 12
 
 CAMERA_PAN_SPEED = 0.5
 GRID_PIXEL_SIZE = 90
 
-BLOB_MOVEMENT_SPEED = 1
+BLOB_MOVEMENT_SPEED = 0.5
 BLOB_SIZE = 40
 
 BAT_AREA_X = 150                            # Bat "home area", 1/2 of rectangle x
 BAT_AREA_Y = 100                            # Bat "home area", 1/2 of rectangle y
-BAT_MOVEMENT_SPEED_X = 3                    # Intital velocity x
-BAT_MOVEMENT_SPEED_Y = 2                    # Intital velocity y
-BAT_SPEED_CHANGE_SCALE = 0.2                # Change factor for velocity value  (0-1)
+BAT_MOVEMENT_SPEED_X = 2                    # Intital velocity x
+BAT_MOVEMENT_SPEED_Y = 1                    # Intital velocity y
+BAT_SPEED_CHANGE_SCALE = 0.1                # Change factor for velocity value  (0-1)
 BAT_ANGLE_CHANGE_SCALE = 20                 # Change facfor for velocity direction in GRAD
 BAT_FRAMES = 60                             # Frequency to distort velocity vector (each xxx frames)
 BAT_SIZE = 30
@@ -149,7 +149,7 @@ class GameView(arcade.View):                                                    
     arrow_list: arcade.SpriteList[arcade.Sprite]
     arrow: arcade.Sprite
     Vecteur: arcade.Vec3
-    Vector_arrow: arcade.Vec2= (0,0)
+    Vector_arrow: arcade.Vec2= arcade.Vec2(0,0)
     change_weapon: bool
     weapon_active: bool
     arrow_active: bool = False
@@ -454,14 +454,16 @@ class GameView(arcade.View):                                                    
         for h in hits:
             if self.sword_active:
                 h.kill_monster()
-            else:
-                self.reset_game()
+
+        if arcade.check_for_collision_with_list(self.player_sprite, self.monsters_list):
+            self.reset_game()
         
-        for a in self.arrow_list:                                                           # Moster kills by arrows
+        for a in self.arrow_list:                                                           # Monster killed by arrows
             hits = arcade.check_for_collision_with_list(a, self.monsters_list)
             for h in hits:
-                if self.arrow_active:
+               if self.arrow_active:
                     h.kill_monster()
+        
                     
         
         
