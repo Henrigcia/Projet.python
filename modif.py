@@ -8,7 +8,7 @@ import arcade.camera.camera_2d
 
 
 PLAYER_MOVEMENT_SPEED = 5
-PLAYER_GRAVITY = 1
+PLAYER_GRAVITY = 0.5
 PLAYER_JUMP_SPEED = 12
 
 CAMERA_PAN_SPEED = 0.5
@@ -250,7 +250,7 @@ class GameView(arcade.View):                                                    
 
         self.next_map = lines[2].split(":")[-1].strip()         # The 3rd line in the file will have the reference to the next level, e.g. "next-map: map2.txt"
 
-        lines = lines[3:-1]                                     # Ignore first 3 lines and the very last one for the map
+        lines = lines[4:-1]                                     # Ignore first 3 lines and the very last one for the map
 
         lines.reverse()                                         # Reverse line order (Arcade places (0,0) at the bottom)
 
@@ -390,9 +390,9 @@ class GameView(arcade.View):                                                    
         self.angle_degrees = math.degrees(self.angle)
         self.Vecteur_sword=arcade.Vec2(self.Vecteur[0] - self.player_sprite.center_x,self.Vecteur[1] - self.player_sprite.center_y)      
         self.Vecteur_sword = self.Vecteur_sword.normalize()*16
+        self.arrow.angle = self.player_bow.angle
         self.arrow.center_x = self.player_bow.center_x
         self.arrow.center_y = self.player_bow.center_y          
-        self.arrow.angle = self.player_bow.angle
         self.Vector_arrow = self.Vecteur_sword.normalize()*ARROW_SPEED
         self.arrow.change_x = self.Vector_arrow.x
         self.arrow.change_y = self.Vector_arrow.y

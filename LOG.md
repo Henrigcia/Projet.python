@@ -22,7 +22,8 @@ Vous pouvez ajouter vos propres tâches si vous le jugez utile (p.ex. avec une d
 * [x] Epée: angle et placement                                        50
 * [ ] Score: pièces                                                   30
 * [ ] Niveaux                                                         ??
-* [ ] Arc
+* [x] Arc angle                                                      150
+* [] Flèches: vitesse apparition et dégats                            ??
 
 ---
 

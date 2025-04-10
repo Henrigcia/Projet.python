@@ -1,7 +1,7 @@
 width: 20
 height: 6
 next-map: maps/map2.txt
----     v
+---     
 *v    -  - 
 ---      v  -
      o*        *o   
@@ -9,4 +9,3 @@ next-map: maps/map2.txt
  S          *o   x*E 
 ======£££££=========
 ---
-
