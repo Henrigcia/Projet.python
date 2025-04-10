@@ -1,8 +1,9 @@
 import arcade
 import os
 import math
-import random
 import arcade.camera.camera_2d
+from monster import *
+
 
 
 
@@ -14,17 +15,7 @@ PLAYER_JUMP_SPEED = 12
 CAMERA_PAN_SPEED = 0.5
 GRID_PIXEL_SIZE = 90
 
-BLOB_MOVEMENT_SPEED = 0.5
-BLOB_SIZE = 40
 
-BAT_AREA_X = 150                            # Bat "home area", 1/2 of rectangle x
-BAT_AREA_Y = 100                            # Bat "home area", 1/2 of rectangle y
-BAT_MOVEMENT_SPEED_X = 2                    # Intital velocity x
-BAT_MOVEMENT_SPEED_Y = 1                    # Intital velocity y
-BAT_SPEED_CHANGE_SCALE = 0.1                # Change factor for velocity value  (0-1)
-BAT_ANGLE_CHANGE_SCALE = 20                 # Change facfor for velocity direction in GRAD
-BAT_FRAMES = 60                             # Frequency to distort velocity vector (each xxx frames)
-BAT_SIZE = 30
 
 ARROW_GRAVITY = 10
 ARROW_SPEED = 12
@@ -43,83 +34,6 @@ SYMBOLS = {
     "v": "assets/kenney-voxel-items-png/kenney-extended-enemies-png/bat.png",   #Bat
     "E": ":resources:/images/tiles/signExit.png", #The sign exit
 }
-
-class Monster(arcade.Sprite):                                                   # The base level class that describes all game monsters behavoirs
-
-    def move_monster(self, wall_list : arcade.SpriteList[arcade.Sprite]):       # The default defintion of a Monster movement. This method will be overriden for each particular Monster subclass (Blob, Bat) to make its movemnent unique
-        self.center_x += self.change_x                                          # We need to pass the walls list as the movement rules can be dependent on collision with walls
-        self.center_y += self.change_y 
-        if self.scale_x*self.change_x > 0:
-            self.scale_x*= -1
-    
-    def kill_monster(self):                                                      # This method will define what happens when the player kills the monster
-        self.remove_from_sprite_lists()                                           # Will remove this monster from all lists and sound
-        arcade.play_sound(arcade.Sound(":resources:/sounds/explosion1.wav"))
-  
-
-class Blob(Monster):                                                            # Blob is a subclass of Monster to describe blob monster
-
-    def move_monster(self, wall_list : arcade.SpriteList[arcade.Sprite]):       # This method overrides and extends the rules of movement for Blob monster
-        super().move_monster(wall_list)                                         # First, we inoke the default movement
-
-        if arcade.check_for_collision_with_list(self, wall_list):               #Check if with the changes the blob touches the wall 
-            self.change_x = - self.change_x   #Invert speed
-            self.scale_x *= -1                #Change looking direction 
-              
-
-        if self.change_x > 0:                                                   # Logic for Blobs stop right side
-            self.center_x += BLOB_SIZE                                              # Move temporarily 1 BLOB_SIZE RIGHT 
-            self.center_y -= 1                                                      # and 1 pix down
-            if not arcade.check_for_collision_with_list(self, wall_list):           # Check if no longer supported by wall
-                self.change_x = - self.change_x                                         # Invert speed
-                self.scale_x *=-1                                                       # Mirrow image   
-            self.center_x -= BLOB_SIZE                                             # restore x
-            self.center_y += 1                                                     # restore y
-
-        elif self.change_x < 0:                                                 # Logic for Blobs stop left side
-                self.center_x -= BLOB_SIZE                                          # Move temporarily 1 BLOB_SIZE LEFT
-                self.center_y -= 1                                                  # and 1 pix down
-                if not arcade.check_for_collision_with_list(self, wall_list):       # Check if no longer supported by wall
-                        self.change_x = - self.change_x                                 # Invert speed
-                        self.scale_x *=-1                                                # Mirrow image                              
-                self.center_x += BLOB_SIZE                                          # restore x
-                self.center_y += 1                                                  # restore y
-            
-
-class Bat(Monster):                                                             # Bat is a subclass of Monster to describe bat monster
-
-    fix_center_x : float
-    fix_center_y : float
-    area_x : float
-    area_y : float
-    frames : int 
-
-    def distort_movement(self, scale: float, angle: float):                                                 # Will distort velocity within the given scale and angle and recalculate Vx and Vy
-
-        angle_dir = math.atan(self.change_y / self.change_x)
-        velocity = math.sqrt(self.change_x**2 + self.change_y**2)
-        velocity += velocity * random.uniform(-1,1) * scale                                               # Random velocity change within the given scale
-        angle_adj = math.radians(random.uniform(-angle, angle))                                           # Random direction change for the velocity vector wuthin the given angle
-        self.change_x =   velocity * math.cos(angle_dir + angle_adj)                                      # Recalculate Vx
-        self.change_y =   velocity * math.sin(angle_dir + angle_adj)                                      # Recalculate Vy
-        
-
-    def move_monster(self, wall_list : arcade.SpriteList[arcade.Sprite]):       # This method overrides and extends the rules of movement for Bat monster
-        super().move_monster(wall_list)                                         # First, we inoke the default movement
-
-        self.frames += 1                                                             # Increase frame count
-        if self.frames == BAT_FRAMES:                                                # When count runs out randomize volcity vector and reset count
-            self.distort_movement(BAT_SPEED_CHANGE_SCALE, BAT_ANGLE_CHANGE_SCALE)
-            self.frames = 0
-
-        current_x = self.center_x - self.fix_center_x
-        current_y = self.center_y - self.fix_center_y
-        if abs(current_x) > abs(self.area_x) :
-            self.change_x = - self.change_x                                         # Invert speed  on the x axis
- #           frames = 0                                                              # Reset frames
-        if abs(current_y) > abs(self.area_y):
-            self.change_y = - self.change_y                                         # Invert speed on the y axis
- #          frames = 0                                                              # Reset frames
 
 
 
@@ -141,10 +55,10 @@ class GameView(arcade.View):                                                    
     player_sprite : arcade.Sprite                                               # Everything that relates to the player and weapons
     player_sprite_list : arcade.SpriteList[arcade.Sprite]
     player_sword: arcade.Sprite
-    sword_active: bool
+   
     sword_list: arcade.SpriteList[arcade.Sprite]
     player_bow: arcade.Sprite
-    bow_active: bool
+    
     bow_list: arcade.SpriteList[arcade.Sprite]
     arrow_list: arcade.SpriteList[arcade.Sprite]
     arrow: arcade.Sprite
@@ -153,6 +67,7 @@ class GameView(arcade.View):                                                    
     change_weapon: bool
     weapon_active: bool
     arrow_active: bool = False
+    arrow_speed_vec : arcade.Vec2 = arcade.Vec2(0,0)
 
     next_map : str                                                              # Ref to the next level map
     sortie_list : arcade.SpriteList[arcade.Sprite]                               #Exit sign                                                       
@@ -207,7 +122,7 @@ class GameView(arcade.View):                                                    
             )
         self.sword_list = arcade.SpriteList(use_spatial_hash=True)
         self.sword_list.append(self.player_sword)
-        self.sword_active = False
+        
 
         self.player_bow: arcade.Sprite = arcade.Sprite(                         # Setup bow
             "assets/kenney-voxel-items-png/bowArrow.png",
@@ -215,14 +130,10 @@ class GameView(arcade.View):                                                    
             )
         self.bow_list = arcade.SpriteList(use_spatial_hash=True)
         self.bow_list.append(self.player_bow)
-        self.bow_active = False
+        
 
-        self.arrow: arcade.Sprite = arcade.Sprite(                              # Setup arrow
-            "assets/kenney-voxel-items-png/arrow.png",
-            scale= 0.5 * 0.7
-        )
         self.arrow_list=arcade.SpriteList(use_spatial_hash=True)
-        self.arrow_list.append(self.arrow)
+        
 
         self.change_weapon = True                                               # Setup weapons
         self.weapon_active = False
@@ -331,12 +242,13 @@ class GameView(arcade.View):                                                    
             self.monsters_list.draw()
             self.coin_list.draw()
             self.player_sprite_list.draw()
-            if self.sword_active:   
+            if self.weapon_active and self.change_weapon:   
                 self.sword_list.draw()
-            if self.bow_active:
+                self.arrow_active = False
+            if self.weapon_active and not self.change_weapon:
                 self.bow_list.draw()
-            if self.arrow_active:
-                 self.arrow_list.draw()   
+            if self.arrow_active: 
+                self.arrow_list.draw()   
               
                 
         with self.camera2.activate():
@@ -385,23 +297,33 @@ class GameView(arcade.View):                                                    
 
     def on_mouse_press(self, x: int, y: int, button: int, modifiers: int) -> None:
         """Called when the user presses a key on the mouse"""
+
+        arrow_tbd = arcade.Sprite(                              # Setup arrow to be drawn
+            "assets/kenney-voxel-items-png/arrow.png",
+            scale= 0.5 * 0.7
+        )
         self.Vecteur = self.camera.unproject((x,y))
         self.angle = math.atan2((self.Vecteur[0]-self.player_sprite.center_x),(self.Vecteur[1]-self.player_sprite.center_y))
         self.angle_degrees = math.degrees(self.angle)
         self.Vecteur_sword=arcade.Vec2(self.Vecteur[0] - self.player_sprite.center_x,self.Vecteur[1] - self.player_sprite.center_y)      
         self.Vecteur_sword = self.Vecteur_sword.normalize()*16
-        self.arrow.angle = self.player_bow.angle
-        self.arrow.center_x = self.player_bow.center_x
-        self.arrow.center_y = self.player_bow.center_y          
+        arrow_tbd.center_x = self.player_bow.center_x
+        arrow_tbd.center_y = self.player_bow.center_y          
         self.Vector_arrow = self.Vecteur_sword.normalize()*ARROW_SPEED
-        self.arrow.change_x = self.Vector_arrow.x
-        self.arrow.change_y = self.Vector_arrow.y
+        arrow_tbd.change_x = self.Vector_arrow.x
+        arrow_tbd.change_y = self.Vector_arrow.y
+        arrow_tbd.angle = self.player_bow.angle
 
         match button: 
             case arcade.MOUSE_BUTTON_LEFT:
                 self.weapon_active = True
+                if self.change_weapon == False:
+                    self.arrow_list.append(arrow_tbd)
+                    self.arrow_active = True
             case arcade.MOUSE_BUTTON_RIGHT:
                 self.change_weapon = not self.change_weapon
+
+                
        
                 
          
@@ -446,13 +368,18 @@ class GameView(arcade.View):                                                    
 
         # Check if exit the level            
         if arcade.check_for_collision_with_list(self.player_sprite, self.sortie_list):
-            self.load_level(self.next_map)                                                  # TO-DO: create a new method end_game() and call if next_map is blank
-
+            self.load_level(self.next_map)  
+        
+                                     
+        for arrow in self.arrow_list:
+            if arcade.check_for_collision_with_list(arrow, self.wall_list):
+                arrow.remove_from_sprite_lists()
+            
 
         #Check monsters hit
         hits = arcade.check_for_collision_with_list(self.player_sword, self.monsters_list)
         for h in hits:
-            if self.sword_active:
+            if self.weapon_active and self.change_weapon:
                 h.kill_monster()
 
         if arcade.check_for_collision_with_list(self.player_sprite, self.monsters_list):
@@ -511,26 +438,29 @@ class GameView(arcade.View):                                                    
         self.player_sword.center_y = self.pointy -20
 
         #Bow
+
         self.player_bow.angle = self.angle_degrees - 45
+       
         if self.angle_degrees>=0:
             self.player_bow.center_x = self.pointx + 15
             
         elif self.angle_degrees<0:
             self.player_bow.center_x = self.pointx -15
-
+            
         self.player_bow.center_y = self.pointy -25
 
-        if self.change_weapon:
-            self.sword_active = self.weapon_active
-        else: 
-            self.bow_active = self.weapon_active
-            self.arrow_active = self.weapon_active
+       
+            
 
         #Arrow
-        self.arrow.change_y -= ARROW_GRAVITY * delta_time
-        self.arrow.angle += 1
-        
-        self.arrow_list.update()
+        for arrow in self.arrow_list: 
+            arrow.change_y -= ARROW_GRAVITY * delta_time
+            
+            arrow_speed_vec = arcade.Vec2(arrow.change_x, arrow.change_y)
+            arrow_speed_vec = arrow_speed_vec.normalize()
+            arrow.radians = math.atan2(arrow_speed_vec[0], arrow_speed_vec[1]) - math.pi/4
+
+            arrow.update()
          
         
 
