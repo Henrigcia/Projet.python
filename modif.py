@@ -3,8 +3,7 @@ import os
 import math
 import arcade.camera.camera_2d
 from monster import *
-
-
+from platforme_bloc import *
 
 
 
@@ -33,6 +32,7 @@ SYMBOLS = {
     "£": ":resources:/images/tiles/lava.png",  # No-go (lava)
     "v": "assets/kenney-voxel-items-png/kenney-extended-enemies-png/bat.png",   #Bat
     "E": ":resources:/images/tiles/signExit.png", #The sign exit
+    "G": "resources:/images/titles/stone_Center_rounded.png", #The gate sign
 }
 
 
@@ -45,6 +45,8 @@ class GameView(arcade.View):                                                    
     lava_list: arcade.SpriteList[arcade.Sprite]
     coin_list : arcade.SpriteList[arcade.Sprite]
     monsters_list : arcade.SpriteList[Monster]                                  # List of monsters (blobs and bats)
+    platforme_list : arcade.SpriteList[arcade.Sprite]
+    gate_list : arcade.SpriteList[arcade.Sprite]
 
     camera : arcade.camera.Camera2D
     sound : arcade.Sound
@@ -115,6 +117,8 @@ class GameView(arcade.View):                                                    
         self.coin_list = arcade.SpriteList(use_spatial_hash=True)
         self.monsters_list = arcade.SpriteList(use_spatial_hash=True)
         self.sortie_list = arcade.SpriteList(use_spatial_hash=True)
+        self.platforme_list = arcade.SpriteList(use_spatial_hash=True)
+        self.gate_list = arcade.SpriteList(use_spatial_hash=True)
 
         self.player_sword: arcade.Sprite = arcade.Sprite(                       # Setup sword
             "assets/kenney-voxel-items-png/sword_silver.png",
@@ -148,6 +152,8 @@ class GameView(arcade.View):                                                    
         self.lava_list.clear()
         self.sortie_list.clear()
         self.player_sprite_list.clear()
+        self.platforme_list.clear()
+        self.gate_list.clear()
  
         # Vérifie si le fichier existe
         if not os.path.exists(filename):
@@ -218,14 +224,45 @@ class GameView(arcade.View):                                                    
                     elif char == "E":
                         self.sortie_list.append(s)             # add Exit to the list
                         
-                    else:  
+                    else:
                         self.wall_list.append(s)               # add a wall to walls list
+
+
+        # TEMPORARY: Manual platforms block initialisation - to replaced by loading from map
+
+        pb = PBloc(0, 400)
+
+        s = arcade.Sprite(texture, scale=0.5)
+        s.center_x, s.center_y = 200 + TILE_SIZE ,200 + TILE_SIZE
+        s.change_x = 1
+        # s.boundary_left, s.boundary_right = 100, 400 - TILE_SIZE
+        pb.add_platform(s)
+        self.platforme_list.append(s)
+  
+
+        p = arcade.Sprite(texture, scale=0.5)
+        p.center_x, p.center_y = s.center_x, s.center_y - TILE_SIZE/2
+        p.change_x = 1
+        # p.boundary_left, p.boundary_right = 100, 400 - TILE_SIZE
+        pb.add_platform(p)
+        self.platforme_list.append(p)
+
+        
+        q = arcade.Sprite(texture, scale=0.5)
+        q.center_x, q.center_y = p.center_x + TILE_SIZE, p.center_y 
+        q.change_x = 1
+        # q.boundary_left, q.boundary_right = 100 + TILE_SIZE, 400
+        pb.add_platform(q)
+        self.platforme_list.append(q)
+        
+        # -----------------------------------------------------------------------------------
 
         self.player_sprite_list.append(self.player_sprite)                      # Add player
         self.physics_engine = arcade.PhysicsEnginePlatformer(                   # Initialize physics
             self.player_sprite,
             walls=self.wall_list,
-            gravity_constant=PLAYER_GRAVITY
+            gravity_constant=PLAYER_GRAVITY,
+            platforms = self.platforme_list
         )
         self.physics_engine.disable_multi_jump()
         self.physics_engine.can_jump()
@@ -235,13 +272,14 @@ class GameView(arcade.View):                                                    
     def on_draw(self) -> None:                                                  # Render the sreen
         self.clear()                                                            # always start with self.clear()
         with self.camera.activate():
-
+            self.platforme_list.draw()
             self.sortie_list.draw()
             self.wall_list.draw()
             self.lava_list.draw()
             self.monsters_list.draw()
             self.coin_list.draw()
             self.player_sprite_list.draw()
+            #self.gate_list.draw()
             if self.weapon_active and self.change_weapon:   
                 self.sword_list.draw()
                 self.arrow_active = False
@@ -321,13 +359,7 @@ class GameView(arcade.View):                                                    
                     self.arrow_list.append(arrow_tbd)
                     self.arrow_active = True
             case arcade.MOUSE_BUTTON_RIGHT:
-                self.change_weapon = not self.change_weapon
-
-                
-       
-                
-         
-           
+                self.change_weapon = not self.change_weapon 
             
     
     def on_mouse_release(self, x: int, y: int, button: int, modifiers: int) -> None:
@@ -389,39 +421,7 @@ class GameView(arcade.View):                                                    
             hits = arcade.check_for_collision_with_list(a, self.monsters_list)
             for h in hits:
                if self.arrow_active:
-                    h.kill_monster()
-        
-                    
-        
-        
-            
-
-            
-            
-                            
- 
-        # if arcade.check_for_collision_with_list(self.player_sword, self.blob_list) and self.sword_active:
-        #     self.blob_list.remove(Blob)
-        #     arcade.play_sound(self.sound_blob)
-        
-        # #Kills the bat
-        # for bat in self.bat_list :
-        #     if arcade.check_for_collision_with_list(self.player_sword, self.bat_list) and self.sword_active :
-        #         bat.remove_from_sprite_lists()
-
-        #         arcade.play_sound(self.sound_blob)
-
-
-        # #Checks if the player hits the bat
-        # if arcade.check_for_collision_with_list(self.player_sprite, self.bat_list):
-        #     self.score = 0
-        #     self.player_sprite.center_x = self.start_x  # Reset X
-        #     self.player_sprite.center_y = self.start_y -150 # Reset Y
-        #     arcade.play_sound(self.sound_gameover)
-            
-
- 
-       
+                    h.kill_monster()      
         #Sword
        
         self.pointx: float
