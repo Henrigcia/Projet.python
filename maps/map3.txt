@@ -1,6 +1,6 @@
 width: 34
 height: 12
-next-map: maps/map1.txt
+next-map: maps/map4.txt
 ---
 **
 ---   --    -     v
@@ -12,4 +12,3 @@ next-map: maps/map1.txt
 ---       v                
 S                          ooooooooooooEooooo 
 ====£££££££££££££££££££££££==================
----
