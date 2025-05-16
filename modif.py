@@ -3,7 +3,8 @@ import os
 import math
 import arcade.camera.camera_2d
 from monster import *
-from platforme_bloc import *
+from PBlock import *
+from ConnectedCells import *
 
 
 
@@ -13,13 +14,13 @@ PLAYER_JUMP_SPEED = 12
 
 CAMERA_PAN_SPEED = 0.5
 GRID_PIXEL_SIZE = 90
-
+TILE_SIZE = 64 
 
 
 ARROW_GRAVITY = 10
 ARROW_SPEED = 12
 
-FIRST_MAP = "maps/map1.txt"                 # First level map file; the each next level is referenced in the map file itself
+FIRST_MAP = "maps/maptest.txt"                 # First level map file; the each next level is referenced in the map file itself
 
 SYMBOLS = {
 
@@ -35,7 +36,11 @@ SYMBOLS = {
     "G": "resources:/images/titles/stone_Center_rounded.png", #The gate sign
 }
 
-
+platform_chars = {"=","-","x","£","E","^"}
+up_chars = {"↑"}
+down_chars = {"↓"}
+left_chars = {"←"}
+right_chars = {"→"}
 
 class GameView(arcade.View):                                                    # The main game class that ihertits View
 
@@ -75,8 +80,6 @@ class GameView(arcade.View):                                                    
     sortie_list : arcade.SpriteList[arcade.Sprite]                               #Exit sign                                                       
     score : int                                                                 #Variable for the score
    
-
-
     def __init__(self) -> None:
         # Magical incantion: initialize the Arcade view
         super().__init__()
@@ -105,9 +108,6 @@ class GameView(arcade.View):                                                    
         
         max_x = GRID_PIXEL_SIZE * self.width 
         max_y = GRID_PIXEL_SIZE * self.height 
-
-
-
 
     def setup(self) -> None:
         
@@ -159,27 +159,25 @@ class GameView(arcade.View):                                                    
         if not os.path.exists(filename):
             print(f"Erreur : Le fichier {filename} est introuvable !")       # TO-DO: handle correctly if file doesn't exixt
             return  
-
+        
         with open(filename, "r", encoding="utf-8") as file:
             lines = file.readlines()
-            
-                                                                # TO-DO: to handle incorrect files, e.g. no 3rd line, etc
-
+                                                                        # TO-DO: to handle incorrect files, e.g. no 3rd line, etc
         self.next_map = lines[2].split(":")[-1].strip()         # The 3rd line in the file will have the reference to the next level, e.g. "next-map: map2.txt"
-
         lines = lines[4:-1]                                     # Ignore first 3 lines and the very last one for the map
-
         lines.reverse()                                         # Reverse line order (Arcade places (0,0) at the bottom)
-
         map_height = len(lines)
-        tile_size = 64
-
-        TILE_SIZE = 64 
+        ps_dict = {}                                            # Here we initialize an empty dict which will contain the coordinates of the platform symbols
+        up_dict = {}
+        down_dict = {}
+        left_dict = {}
+        right_dict = {}
 
         for row_index, line in enumerate(lines):
             for col_index, char in enumerate(line):  # Reads through the caracters 
-                x = col_index * tile_size
-                y = (map_height - row_index - 1) * tile_size # Flip y axis
+                x = col_index * TILE_SIZE
+                y = (map_height - row_index - 1) * TILE_SIZE # Flip y axis
+
                 if char in SYMBOLS:
 
                     texture = SYMBOLS[char]
@@ -188,6 +186,18 @@ class GameView(arcade.View):                                                    
                     s = arcade.Sprite(texture, scale=0.5)
                     s.center_x = center_x
                     s.center_y = center_y
+
+                    if char in platform_chars and row_index != 0:                       # Here it checks is a symbol that forms the platform
+                        ps_dict[(col_index, row_index)] = s          # Here it stores it in a dict the sprite and its coordinates (x,y) as the dict key
+                    
+                    if char in up_chars:
+                        up_dict[(col_index, row_index)] = char     
+                    if char in down_chars:
+                       down_dict[(col_index, row_index)] = char  
+                    if char in left_chars:
+                        left_dict[(col_index, row_index)] = char  
+                    if char in right_chars:
+                        right_dict[(col_index, row_index)] = char  
 
                     if char == "S":  
                         self.player_sprite = s                  # Spawnpoint  
@@ -215,8 +225,7 @@ class GameView(arcade.View):                                                    
                         v.fix_center_y = center_y
                         v.area_x = BAT_AREA_X
                         v.area_y = BAT_AREA_Y
-                        v.frames = 0
-                        # v.distort_movement(1)                   
+                        v.frames = 0              
                         self.monsters_list.append(v)
                     
                     elif char == "£":                          # add Lava to lava list
@@ -227,35 +236,21 @@ class GameView(arcade.View):                                                    
                     else:
                         self.wall_list.append(s)               # add a wall to walls list
 
+        print("The dictoinary of platform sprites read from the file:")
+        print(ps_dict)
+        print("The dictoinary of parrows read from the file:")
+        print(up_dict)
 
-        # TEMPORARY: Manual platforms block initialisation - to replaced by loading from map
+        blocks: list[list[tuple[int, int]]] = Platforms(set(ps_dict.keys())).get_islands()          # Convert the dict keys into the set of points (row, col) and detect the platforms
 
-        pb = PBloc(0, 400)
-
-        s = arcade.Sprite(texture, scale=0.5)
-        s.center_x, s.center_y = 200 + TILE_SIZE ,200 + TILE_SIZE
-        s.change_x = 1
-        # s.boundary_left, s.boundary_right = 100, 400 - TILE_SIZE
-        pb.add_platform(s)
-        self.platforme_list.append(s)
-  
-
-        p = arcade.Sprite(texture, scale=0.5)
-        p.center_x, p.center_y = s.center_x, s.center_y - TILE_SIZE/2
-        p.change_x = 1
-        # p.boundary_left, p.boundary_right = 100, 400 - TILE_SIZE
-        pb.add_platform(p)
-        self.platforme_list.append(p)
-
-        
-        q = arcade.Sprite(texture, scale=0.5)
-        q.center_x, q.center_y = p.center_x + TILE_SIZE, p.center_y 
-        q.change_x = 1
-        # q.boundary_left, q.boundary_right = 100 + TILE_SIZE, 400
-        pb.add_platform(q)
-        self.platforme_list.append(q)
-        
-        # -----------------------------------------------------------------------------------
+        for b in blocks:                        # For each of the "islands" of plaform-type blocks
+            pb = PBlock(1, 1280)                # Create a new PBlock and TEMP make it to move across entire screen
+            if blocks.index(b) == 2:                    # TEMP only take 3rd block
+                for c in b:                         # For each cell in the "island"
+                    s = ps_dict[c]                  # Get the corresponding srite from dictionary using the coordinates tuple
+                    s.change_x = 1
+                    pb.add_platform(s)              # Add the srite to PBlock
+                    self.platforme_list.append(s)   # Add the srtite to the list of all plaform block sprites
 
         self.player_sprite_list.append(self.player_sprite)                      # Add player
         self.physics_engine = arcade.PhysicsEnginePlatformer(                   # Initialize physics

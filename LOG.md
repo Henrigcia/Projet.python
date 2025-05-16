@@ -20,11 +20,18 @@ Vous pouvez ajouter vos propres tâches si vous le jugez utile (p.ex. avec une d
 * [x] Blobs: mouvement                                               150
 * [x] Epée: apparition et dégats                                     200
 * [x] Epée: angle et placement                                        50
-* [ ] Score: pièces                                                   30
-* [ ] Niveaux                                                         ??
+* [x] Score: pièces                                                   30
+* [x] Score: texte                                                    10
+* [x] Chauves souris: mouvement                                       120
+* [x] Niveaux                                                        180 
 * [x] Arc angle                                                      150
-* [] Flèches: vitesse apparition et dégats                            ??
-
+* [x] Flèches: vitesse apparition et dégats                            ??
+* [x] Panneau et lecture de prochaine map                             120
+* [x] Lecture de carte                                                180
+* [x]Creation d'un algo pour platformes en manuel                      90
+* [] Plateformes qui bougent                                          ??
+* [] Gates et levier                                                  ??
+* [] Lecture de flèches map                                           120 (min)
 ---
 
 ## À faire (prochaine étape)
@@ -32,15 +39,15 @@ Vous pouvez ajouter vos propres tâches si vous le jugez utile (p.ex. avec une d
 Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour chacune/chacun.
 Par exemple :
 
-* Ron : meilleure gestion du clavier
-* Hermione: finir le reste du projet
+* Henri : finir les gates et ajuster les collisions
+* Stephan : finir le mouvement des platformes et du refactoring
 
 ---
 
 ## Suivi
 
 ### Semaine 2
-Création de projet et suivi du tutoriel il a fallu gérer la gravité par rapport au joeur et chargement de la map
+Création de projet et suivi du tutoriel il a fallu gérer la gravité par rapport au joeur et chargement de la map ainsi que l'affichage de certains objets sur la map.
 ### Semaine 3
 
 ### Semaine 4
@@ -48,19 +55,19 @@ Création de projet et suivi du tutoriel il a fallu gérer la gravité par rappo
 ### Semaine 5
 Création des chauves souris et de l'arc, problématique de la limite de déplacement de la souri,
 ### Semaine 6
-
+Ici on a refactoré plusieurs aspects de notre code afin de avoir un code plus lisible. Ajout de nouvelles classes et améliorations de certains aspects.
 ### Semaine 7
-
+Ici encore des améliorations du code avec du refactoring.
 ### Semaine 8
-
+Création des platformes en manuel avec une classe à part. Création du début des gates, compréhension de la tâche demandée.
 ### Semaine 9
-
+Reflexion d'idée pour crééer l'algo de lecture de map.
 ### Semaine 10
-
+Compréhension de la caractérisation du fichier JAMAL. Création d'un dict pour pouvoir l'utiliser dans une classe à part. Réfléxion sur l'algo pour faire bouger les platformes.
 ### Semaine 11
-
+Le mouvement des platformes presque terminé. Création de nouveau fichier afin d'espacier le code, algo de lecture de carte trouvé. Il reste à gérer les fleches. Gates et levier terminés manque les collisions.
 ### Semaine 12
-
+Création algo pour lecture de flèches et finalisation des platformes bougeantes.
 ### Semaine 13
 
 ### Semaine 14
