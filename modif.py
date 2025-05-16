@@ -1,9 +1,10 @@
+from __future__ import annotations
 import arcade
 import os
 import math
 import arcade.camera.camera_2d
 from monster import *
-from platforme_bloc import *
+
 import yaml
 from switch_gate import Switch, Gate
 
@@ -24,7 +25,7 @@ TILE_SIZE = 64
 ARROW_GRAVITY = 10
 ARROW_SPEED = 12
 
-FIRST_MAP = "maps/maptest.txt"                 # First level map file; the each next level is referenced in the map file itself
+FIRST_MAP = "maps/map1.txt"                 # First level map file; the each next level is referenced in the map file itself
 
 SYMBOLS = {
 
@@ -93,7 +94,7 @@ class GameView(arcade.View):                                                    
    
 
 
-    score : int                                                                 #Variable for the score
+                                                                #Variable for the score
    
     def __init__(self) -> None:
         # Magical incantion: initialize the Arcade view
@@ -204,10 +205,10 @@ class GameView(arcade.View):                                                    
         lines = arr[1].splitlines()
         lines.reverse()
 
-            lines = file.readlines()
+       
                                                                         # TO-DO: to handle incorrect files, e.g. no 3rd line, etc
         self.next_map = lines[2].split(":")[-1].strip()         # The 3rd line in the file will have the reference to the next level, e.g. "next-map: map2.txt"
-        lines = lines[4:-1]                                     # Ignore first 3 lines and the very last one for the map
+                                            # Ignore first 3 lines and the very last one for the map
         lines.reverse()                                         # Reverse line order (Arcade places (0,0) at the bottom)
         map_height = len(lines)
         
@@ -226,11 +227,9 @@ class GameView(arcade.View):                                                    
 
         for row_index, line in enumerate(lines):
             for col_index, char in enumerate(line):  # Reads through the caracters 
+
                 x = col_index * self.tile_size
-                y = (map_height - row_index - 1) * self.tile_size # Flip y axis
-                
-                x = col_index * TILE_SIZE
-                y = (map_height - row_index - 1) * TILE_SIZE # Flip y axis
+                y = (map_height - row_index - 1) * self.tile_size # Flip y axis  
 
                 if char in SYMBOLS:
 
@@ -306,9 +305,9 @@ class GameView(arcade.View):                                                    
         #self.solid(self.gate_list)
         for gate in self.gate_list:
             gate.hit_box = arcade.hitbox.RotatableHitBox(
-                gate.texture.hit_box_points
+                 gate.texture.hit_box_points
             )
-                        self.wall_list.append(s)               # add a wall to walls list
+                        
 
         print("The dictoinary of platform sprites read from the file:")
         print(ps_dict)
