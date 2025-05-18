@@ -12,11 +12,13 @@ from abc import ABC, abstractmethod
 class ConnectedCells:
 
     Cells: set[tuple[int,int]]  = set()                                  # The full set of cells defined by tuples of (x,y) coordinates
-    Visited: set[tuple[int,int]] = set()                                 # We will track visited cells here
+    Visited: set[tuple[int,int]] = set()                                 # We will track visited cells here during DFS
+    Islands: list[list[tuple[int, int]]] = []                            # We will store the list of connected cells (islands) here
     
     def __init__(self, Cells: set[tuple[int, int]]) -> None:
         self.Cells = Cells
         self.Visited = set()
+        self.Islands = []
 
 # We will define this function as needed to return the set of the cells around the given cell (aka set of "neighbors")
     @abstractmethod
@@ -44,16 +46,15 @@ class ConnectedCells:
 
 # This method will build the list of all connected "islands of cells" by calling DFS for each cell that has not been visited yet
 # If a cell is in visited set this means it has already been assigned to some island so we skip it
-    def get_islands(self) -> list[list[tuple[int, int]]]:
+    def build_islands(self) -> None:
         self.Visited = set()                                                          # Reset visits list
-        islands: list[list[tuple[int, int]]] = []                                     # Reset islands list
+        self.Islands = []                                                             # Reset islands list
 
         for cell in self.Cells:                        # Go through each cell in the grid
             if cell not in self.Visited:               # If it has not been visited yet...
                 island = self.DFS(cell)                # ...build a new island from this cell using DFS 
-                islands.append(island)                 # Add it to the list of islands
+                self.Islands.append(island)                 # Add it to the list of islands
 
-        return islands
 
 
 class Platforms(ConnectedCells):

@@ -1,6 +1,7 @@
 from __future__ import annotations
 import arcade
 import os
+import sys
 import math
 import arcade.camera.camera_2d
 from monster import *
@@ -12,20 +13,18 @@ from PBlock import *
 from ConnectedCells import *
 
 
-
 PLAYER_MOVEMENT_SPEED = 5
 PLAYER_GRAVITY = 0.5
 PLAYER_JUMP_SPEED = 12
 
 CAMERA_PAN_SPEED = 0.5
 GRID_PIXEL_SIZE = 90
-TILE_SIZE = 64 
-
+TILE_SIZE = 64
 
 ARROW_GRAVITY = 10
 ARROW_SPEED = 12
 
-FIRST_MAP = "maps/map1.txt"                 # First level map file; the each next level is referenced in the map file itself
+FIRST_MAP = "maps/maptest.txt"                 # First level map file; the each next level is referenced in the map file itself
 
 SYMBOLS = {
 
@@ -39,13 +38,14 @@ SYMBOLS = {
     "v": "assets/kenney-voxel-items-png/kenney-extended-enemies-png/bee_fly.png",   #Bat
     "E": ":resources:/images/tiles/signExit.png", #Exit
     "|": ":resources:/images/tiles/stoneCenter_rounded.png", #Gate
+    "^": ":resources:/images/tiles/leverLeft.png"     
 }
 
 platform_chars = {"=","-","x","£","E","^"}
-up_chars = {"↑"}
-down_chars = {"↓"}
-left_chars = {"←"}
-right_chars = {"→"}
+up_chars = {"↑","U"}
+down_chars = {"↓","D"}
+left_chars = {"←","L"}
+right_chars = {"→","R"}
 
 class GameView(arcade.View):                                                    # The main game class that ihertits View
 
@@ -56,12 +56,12 @@ class GameView(arcade.View):                                                    
     coin_list : arcade.SpriteList[arcade.Sprite]
     monsters_list : arcade.SpriteList[Monster]                                  # List of monsters (blobs and bats)
     platforme_list : arcade.SpriteList[arcade.Sprite]
-    gate_list : arcade.SpriteList[arcade.Sprite]
-    open_gate_list : arcade.SpriteList[arcade.Sprite]
-    switch_list: arcade.SpriteList[Switch]
-    solid_list: arcade.SpriteList[arcade.Sprite]
+    #gate_list : arcade.SpriteList[arcade.Sprite]
+    #open_gate_list : arcade.SpriteList[arcade.Sprite]
+    #switch_list: arcade.SpriteList[Switch]
+    #solid_list: arcade.SpriteList[arcade.Sprite]
     #new_switch_list: arcade.SpriteList[arcade.Sprite]
-    sprite_switch: arcade.SpriteList[arcade.Sprite]
+    #sprite_switch: arcade.SpriteList[arcade.Sprite]
     camera : arcade.camera.Camera2D
     sound : arcade.Sound
     sound_2 : arcade.Sound
@@ -84,13 +84,13 @@ class GameView(arcade.View):                                                    
     weapon_active: bool
     arrow_active: bool = False
     arrow_speed_vec : arcade.Vec2 = arcade.Vec2(0,0)
-    switch: Switch
+    #switch: Switch
  
 
     next_map : str                                                              # Ref to the next level map
     sortie_list : arcade.SpriteList[arcade.Sprite]                               #Exit sign                                                       
     score : int
-    tile_size: int = 64                                                                 #Variable for the score
+                                                                #Variable for the score
    
 
 
@@ -134,12 +134,12 @@ class GameView(arcade.View):                                                    
         self.monsters_list = arcade.SpriteList(use_spatial_hash=True)
         self.sortie_list = arcade.SpriteList(use_spatial_hash=True)
         self.platforme_list = arcade.SpriteList(use_spatial_hash=True)
-        self.gate_list = arcade.SpriteList(use_spatial_hash=True)
-        self.open_gate_list = arcade.SpriteList(use_spatial_hash=True)
+        #self.gate_list = arcade.SpriteList(use_spatial_hash=True)
+        #s#elf.open_gate_list = arcade.SpriteList(use_spatial_hash=True)
         #self.switch_list = arcade.SpriteList(use_spatial_hash=True)
         #self.new_switch_list = arcade.SpriteList(use_spatial_hash=True)
-        self.sprite_switch = arcade.SpriteList(use_spatial_hash=True)
-        self.solid_list = arcade.SpriteList(use_spatial_hash=True)
+        #self.sprite_switch = arcade.SpriteList(use_spatial_hash=True)
+        #self.solid_list = arcade.SpriteList(use_spatial_hash=True)
         
 
         self.player_sword: arcade.Sprite = arcade.Sprite(                       # Setup sword
@@ -182,80 +182,57 @@ class GameView(arcade.View):                                                    
         self.sortie_list.clear()
         self.player_sprite_list.clear()
         self.platforme_list.clear()
-        self.gate_list.clear()
-        self.sprite_switch.clear()
+        #self.gate_list.clear()
+        #self.sprite_switch.clear()
       
- 
-        # Vérifie si le fichier existe
-        if not os.path.exists(filename):
-            print(f"Erreur : Le fichier {filename} est introuvable !")       # TO-DO: handle correctly if file doesn't exist
-            return  
 
-        s = ""
-        
-        with open(filename, "r", encoding="utf-8") as file:
-            for line in file.readlines():
-                s += line
+        try:    
+            with open(filename, "r", encoding="utf-8") as file:
+                lines = file.readlines()
+            self.next_map = lines[2].split(":")[-1].strip()         # The 3rd line in the file will have the reference to the next level, e.g. "next-map: map2.txt"
+            lines = lines[4:-1]                                     # Ignore first 3 lines and the very last one for the map
+        except Exception as e:
+            self.fatal_error(e)
 
-        arr = s.split("---", 1)
-        m = yaml.safe_load(arr[0])
-
-        self.next_map = m["next-map"]
-        
-        lines = arr[1].splitlines()
-        lines.reverse()
-
-       
-                                                                        # TO-DO: to handle incorrect files, e.g. no 3rd line, etc
-        self.next_map = lines[2].split(":")[-1].strip()         # The 3rd line in the file will have the reference to the next level, e.g. "next-map: map2.txt"
-                                            # Ignore first 3 lines and the very last one for the map
         lines.reverse()                                         # Reverse line order (Arcade places (0,0) at the bottom)
         map_height = len(lines)
-        
 
-        self.switch_list = Switch.load_switchgates(filename)
+        #self.switch_list = Switch.load_switchgates(filename)
 
-        self.load_switches()
-            
+        #self.load_switches()
 
-        
-        ps_dict = {}                                            # Here we initialize an empty dict which will contain the coordinates of the platform symbols
-        up_dict = {}
-        down_dict = {}
-        left_dict = {}
-        right_dict = {}
+        ps_dict:    dict[tuple[int,int], arcade.Sprite] = {}    # Here we initialize an empty dict which will contain the coordinates of the platform symbols and coorspinding Sprite
+        up_set:    set[tuple[int,int]] = set()                 # Here we will store the coordinates of each type of arrows 
+        down_set:  set[tuple[int,int]] = set()
+        left_set:  set[tuple[int,int]] = set()
+        right_set: set[tuple[int,int]] = set()
 
-        for row_index, line in enumerate(lines):
-            for col_index, char in enumerate(line):  # Reads through the caracters 
+        for row_index, line in enumerate(lines):                # Each line...
+            for col_index, char in enumerate(line):             # ... read through each char 
 
-                x = col_index * self.tile_size
-                y = (map_height - row_index - 1) * self.tile_size # Flip y axis  
+                if char in up_chars:                             # Here we will add an arrow coordinates to the relevant set of arrows
+                    up_set.add((col_index, row_index))
+                if char in down_chars:
+                    down_set.add((col_index, row_index)) 
+                if char in left_chars:
+                    left_set.add((col_index, row_index))
+                if char in right_chars:
+                    right_set.add((col_index, row_index))
 
-                if char in SYMBOLS:
-
+                if char in SYMBOLS:                             # If any of the game symbols we will then create a new Sprite
                     texture = SYMBOLS[char]
-                    center_x = col_index * self.tile_size + self.tile_size / 2
-                    center_y = row_index * self.tile_size + self.tile_size / 2
+                    center_x = col_index * TILE_SIZE + TILE_SIZE / 2
+                    center_y = row_index * TILE_SIZE + TILE_SIZE / 2
                     s = arcade.Sprite(texture, scale=0.5)
                     s.center_x = center_x
                     s.center_y = center_y
 
-                    if char in platform_chars and row_index != 0:                       # Here it checks is a symbol that forms the platform
+                    if char in platform_chars and row_index != 0:    # Here it checks is a symbol that forms the platform and this is not the bottom line
                         ps_dict[(col_index, row_index)] = s          # Here it stores it in a dict the sprite and its coordinates (x,y) as the dict key
                     
-                    if char in up_chars:
-                        up_dict[(col_index, row_index)] = char     
-                    if char in down_chars:
-                       down_dict[(col_index, row_index)] = char  
-                    if char in left_chars:
-                        left_dict[(col_index, row_index)] = char  
-                    if char in right_chars:
-                        right_dict[(col_index, row_index)] = char  
-
                     if char == "S":  
                         self.player_sprite = s                  # Spawnpoint  
-                        self.start_x = x                        # Store start coordinates
-                        self.start_y = y 
+                        self.start_x, self.start_y = col_index * TILE_SIZE, (map_height - row_index - 1) * TILE_SIZE
 
                     elif char == "*":  
                         self.coin_list.append(s)                # add a coin to coins list
@@ -285,45 +262,108 @@ class GameView(arcade.View):                                                    
                         self.lava_list.append(s) 
                     elif char == "E":
                         self.sortie_list.append(s)             # add Exit to the list
-                    elif char == "|":
-                        g_active = False
-                        if "gates" in m:
-                            for gate in m["gates"]:
-                                if gate["x"] == col_index and gate["y"] == row_index:
-                                    g_active = gate["state"] == "open"
-                        if not g_active:
-                            self.gate_list.append(s)
-                        else:
-                            print("default opened gate")
-                            self.open_gate_list.append(s)
-                    else:
-                        self.wall_list.append(s)              
+                    else :
+                        self.wall_list.append(s)
+                    #elif char == "|":
+                        #g_active = False
+                        #if "gates" in m:
+                            #for gate in m["gates"]:
+                                #if gate["x"] == col_index and gate["y"] == row_index:
+                                    #g_active = gate["state"] == "open"
+                        #if not g_active:
+                            #self.gate_list.append(s)
+                       # else:
+                            #print("default opened gate")
+                            #self.open_gate_list.append(s)
+        
         
         # -----------------------------------------------------------------------------------
     
 
         #self.solid(self.gate_list)
-        for gate in self.gate_list:
-            gate.hit_box = arcade.hitbox.RotatableHitBox(
-                 gate.texture.hit_box_points
-            )
+        #for gate in self.gate_list:
+            #gate.hit_box = arcade.hitbox.RotatableHitBox(
+                 #gate.texture.hit_box_points
+            #)
                         
 
-        print("The dictoinary of platform sprites read from the file:")
-        print(ps_dict)
-        print("The dictoinary of parrows read from the file:")
-        print(up_dict)
+        blocks: Platforms = Platforms(set(ps_dict.keys()))                 # Convert the dict keys into the set of points (x,y) and create Platforms object
+        ups:    VSeries = VSeries(up_set)                                  # Create VSeries object for arrows up
+        downs:  VSeries = VSeries(down_set)                                # Create VSeries object for arrows down
+        lefts:  HSeries = HSeries(left_set)                                # Create HSeries object for arrows left
+        rights: HSeries = HSeries(right_set)                               # Create HSeries object for arrows right
 
-        blocks: list[list[tuple[int, int]]] = Platforms(set(ps_dict.keys())).get_islands()          # Convert the dict keys into the set of points (row, col) and detect the platforms
+        blocks.build_islands()                                            # Build the list of the plaform blocks
+        rights.build_islands()                                            # Build the list of the arrow-right series
+        lefts.build_islands()                                             # Build the list of the arrow-left series
+        ups.build_islands()                                               # Build the list of the arrow-up series
+        downs.build_islands()                                             # Build the list of the arrow-down series
 
-        for b in blocks:                        # For each of the "islands" of plaform-type blocks
-            pb = PBlock(1, 1280)                # Create a new PBlock and TEMP make it to move across entire screen
-            if blocks.index(b) == 2:                    # TEMP only take 3rd block
-                for c in b:                         # For each cell in the "island"
-                    s = ps_dict[c]                  # Get the corresponding srite from dictionary using the coordinates tuple
-                    s.change_x = 1
-                    pb.add_platform(s)              # Add the srite to PBlock
-                    self.platforme_list.append(s)   # Add the srtite to the list of all plaform block sprites
+        for b in blocks.Islands:                                          # For each of the blocks
+
+            if True:                                                      # TEMP only take 1st block: blocks.Islands.index(b) == 2:
+
+                boundary_right: int = max([x for x,y in b])               # By default, the right boundary of a block is x of the rightmost cell
+                boundary_left: int = min([x for x,y in b])                # By default, the left boundary of a block is x of the leftmost cell
+                boundary_top: int = max([y for x,y in b])                 # By default, the top boundary of a block is y of the highest cell
+                boundary_bottom: int = min([y for x,y in b])              # By default, the bottom boundary of a block is y of the lowest cell
+
+                rights_no: int = 0                                        # Here we will track the number of attached arrows of each direction
+                lefts_no: int = 0
+                ups_no: int = 0                                        
+                downs_no: int = 0
+
+                for c in b:                                               # For each cell c in this block we will look for the attached arrows and update block boundaries if found
+
+                    for a in rights.Islands:                              # Go through each arrow RIGHT 
+                        if (c[0]+1, c[1]) in a:                            # If the cell to the right of c belongs to an arrow RIGHT...
+                            boundary_right = max([x for x,y in a])           # ...update right boundary of the block to the x of the rightmost arrow cell
+                            rights_no += 1                                   # increase attached arrows counter
+
+                    for a in lefts.Islands:                               # Go through each arrow LEFT 
+                        if (c[0]-1, c[1]) in a:                            # If the cell to the left of c belongs to an arrow LEFT...
+                            boundary_left = min([x for x,y in a])            # ...update left boundary of the block to the x of the lefttmost arrow cell
+                            lefts_no += 1                                    # increase attache arrows counter
+
+                    for a in ups.Islands:                                 # Go through each arrow UP
+                        if (c[0], c[1]+1) in a:                            # If the cell to the up of c belongs to an arrow UP...
+                            boundary_top = max([y for x,y in a])            # ...update top boundary of the block to the y of the highest arrow cell
+                            ups_no += 1                                    # increase attached arrows counter
+
+                    for a in downs.Islands:                               # Go through each arrow DOWN 
+                        if (c[0], c[1]-1) in a:                            # If the cell to the down of c belongs to an arrow DOWN...
+                            boundary_bottom = min([y for x,y in a])          # ...update bottom boundary of the block to the y of the lowest arrow cell
+                            downs_no += 1                                    # increase attached arrows counter
+
+                if sum([rights_no, lefts_no, ups_no, downs_no]) != 0:      # If any movement at all is detected for this block...
+
+                    if sum([rights_no, lefts_no]) != 0 and sum([ups_no, downs_no]) != 0:
+                        self.fatal_error("Invalid map: plafform block cannot move both horizontally and vertically at the same time")
+                    
+                    if any([rights_no > 1, lefts_no > 1, ups_no > 1, downs_no > 1]):
+                        self.fatal_error("Invalid map: plafform block cannot have more than one movemnent arrow attached")                    
+
+                    if sum([rights_no, lefts_no]) != 0:                                # The block will move HORIZONTALLY
+                        change_x: float = 1 if rights_no == 1 else -1 if lefts_no == 1 else 0           # ... set initial horizontal speed
+                        pb: HBlock = HBlock(                                                          # Create a new HBlock object for this block with the screen movement boundaries
+                            boundary_left * TILE_SIZE + TILE_SIZE/2, 
+                            boundary_right * TILE_SIZE + TILE_SIZE/2)
+                        for c in b:                                         # For each cell in this block...
+                            s = ps_dict[c]                                  # ...get the corresponding sprite from dictionary using the tuple coordinates
+                            s.change_x = change_x                           # Set initial horizontal speed
+                            pb.add_platform(s)                              # Add the sprite to HBlock and recalculate individual boundaries for coherent movement
+                            self.platforme_list.append(s)                   # Add the sprtite to the list of all platform block sprites for Arcade engine
+
+                    if sum([ups_no, downs_no]) != 0:                                # The block will move VERTICALLY
+                        change_y: float = 1 if ups_no == 1 else -1 if downs_no == 1 else 0           # ... set initial vertical speed
+                        pb: VBlock = VBlock(                                                          # Create a new VBlock object for this block with the screen movement boundaries
+                            boundary_bottom * TILE_SIZE + TILE_SIZE/2, 
+                            boundary_top * TILE_SIZE + TILE_SIZE/2)
+                        for c in b:                                         # For each cell in this block...
+                            s = ps_dict[c]                                  # ...get the corresponding sprite from dictionary using the tuple coordinates
+                            s.change_y = change_y                           # Set initial vertical speed
+                            pb.add_platform(s)                              # Add the sprite to VBlock and recalculate individual boundaries for coherent movement
+                            self.platforme_list.append(s)                   # Add the sprtite to the list of all platform block sprites for Arcade engine
 
         self.player_sprite_list.append(self.player_sprite)                      # Add player
         self.physics_engine = arcade.PhysicsEnginePlatformer(                   # Initialize physics
@@ -335,25 +375,15 @@ class GameView(arcade.View):                                                    
         self.physics_engine.disable_multi_jump()
         self.physics_engine.can_jump()
                
-    def load_switches(self)->None:
+    #def load_switches(self)->None:
 
-        self.sprite_switch.clear()
+        #self.sprite_switch.clear()
 
-        for a in self.switch_list:    
-            a.appearance = Switch.switchdraw(a)
-            a.appearance.center_x = a.x * self.tile_size + self.tile_size/2
-            a.appearance.center_y =  a.y * self.tile_size + self.tile_size/1.9  #using 1.9 to correct positional error 
-            self.sprite_switch.append(a.appearance)
-        
-
-           
-       
-            
-
-
-
-        
-        
+        #for a in self.switch_list:    
+            #a.appearance = Switch.switchdraw(a)
+            #a.appearance.center_x = a.x * self.tile_size + self.tile_size/2
+            #a.appearance.center_y =  a.y * self.tile_size + self.tile_size/1.9  #using 1.9 to correct positional error 
+            #self.sprite_switch.append(a.appearance)
 
     def on_draw(self) -> None:                                                  # Render the sreen
         self.clear()                                                            # always start with self.clear()
@@ -365,10 +395,8 @@ class GameView(arcade.View):                                                    
             self.monsters_list.draw()
             self.coin_list.draw()
             self.player_sprite_list.draw()
-            self.gate_list.draw()
-            self.sprite_switch.draw()
-           
-                
+            #self.gate_list.draw()
+            #self.sprite_switch.draw()
 
             if self.weapon_active and self.change_weapon:   
                 self.sword_list.draw()
@@ -448,11 +476,11 @@ class GameView(arcade.View):                                                    
                 if self.change_weapon == False:
                     self.arrow_list.append(arrow_tbd)
                     self.arrow_active = True
-                for a in self.switch_list:
-                    if self.weapon_active and self.change_weapon and self.toggle(a, self.player_sword):
-                        print("Doerane")
-                        a.update()
-                        self.load_switches()
+                #for a in self.switch_list:
+                    #if self.weapon_active and self.change_weapon and self.toggle(a, self.player_sword):
+                        #print("Doerane")
+                        #a.update()
+                        #self.load_switches()
                     
             case arcade.MOUSE_BUTTON_RIGHT:
                 self.change_weapon = not self.change_weapon 
@@ -502,8 +530,8 @@ class GameView(arcade.View):                                                    
         for arrow in self.arrow_list:
             if arcade.check_for_collision_with_list(arrow, self.wall_list):
                 arrow.remove_from_sprite_lists()
-            if arcade.check_for_collision_with_list(arrow, self.sprite_switch):
-                arrow.remove_from_sprite_lists()
+            #if arcade.check_for_collision_with_list(arrow, self.sprite_switch):
+                #arrow.remove_from_sprite_lists()
             
 
         #Check monsters hit
@@ -534,8 +562,8 @@ class GameView(arcade.View):                                                    
         elif self.angle_degrees<0:
             self.player_sword.center_x = self.pointx -15
         self.player_sword.center_y = self.pointy -20
-        for a in self.switch_list:
-            Switch.update(a)
+        #for a in self.switch_list:
+            #Switch.update(a)
 
         #Bow
 
@@ -564,11 +592,11 @@ class GameView(arcade.View):                                                    
 
         
 
-        for a in self.arrow_list:                                                           
-            for s in self.switch_list:
-                if self.toggle(s, a):
-                    s.update()
-                    self.load_switches()
+        #for a in self.arrow_list:                                                           
+            #for s in self.switch_list:
+                #if self.toggle(s, a):
+                    #s.update()
+                    #self.load_switches()
                     #if gate in self.gate_list:
                     #self.gate_list.remove(gate)
                     
@@ -586,76 +614,76 @@ class GameView(arcade.View):                                                    
     #Switches!!
 
     
-    def toggle(self, switch: Switch, player: arcade.Sprite)->bool:
+    #def toggle(self, switch: Switch, player: arcade.Sprite)->bool:
 
-        if switch.last_hit < 0.4:
+        #if switch.last_hit < 0.4:
             
-            return False
+            #return False
         
-        if switch.disabled:
+        #if switch.disabled:
            
-            return False
+            #return False
         
-        if arcade.check_for_collision(player, switch.appearance):
-            switch.status = not switch.status
-            switch.last_hit = 0
-            if switch.status:
-                self.switch_action_on(switch)
-            else: 
-                self.switch_action_off(switch)
+        #if arcade.check_for_collision(player, switch.appearance):
+            #switch.status = not switch.status
+            #switch.last_hit = 0
+            #if switch.status:
+                #self.switch_action_on(switch)
+            #else: 
+                #self.switch_action_off(switch)
 
-            return True
-        else: 
-            return False 
+            #return True
+        #else: 
+            #return False 
         
     
-    def switch_action_on(self, switch: Switch)->None:
-        if switch.switch_on is None:
-            return
+    #def switch_action_on(self, switch: Switch)->None:
+        #if switch.switch_on is None:
+            #return
         
-        for i in switch.switch_on:
+        #for i in switch.switch_on:
 
-            if i.kind == Switch.Action.Kind.open_gate:
-                gate = Gate(i.x,i.y,True)  
-                self.action_open(gate)
+            #if i.kind == Switch.Action.Kind.open_gate:
+                #gate = Gate(i.x,i.y,True)  
+                #self.action_open(gate)
 
-            if i.kind == Switch.Action.Kind.close_gate:
-                gate = Gate(i.x,i.y,False)
-                self.action_close(gate)
+            #if i.kind == Switch.Action.Kind.close_gate:
+                #gate = Gate(i.x,i.y,False)
+                #self.action_close(gate)
 
-            if i.kind == Switch.Action.Kind.disable:
+            #if i.kind == Switch.Action.Kind.disable:
                 
-                switch.disabled = True
+                #switch.disabled = True
 
-    def switch_action_off(self, switch: Switch)->None:
-        if switch.switch_off is None:
-            return
-        for j in switch.switch_off:
-            if j.kind == Switch.Action.Kind.open_gate:
-                gate = Gate(j.x,j.y,True)  
-                self.action_open(gate)
-            if j.kind == Switch.Action.Kind.close_gate:
-                gate = Gate(j.x,j.y,False)
-                self.action_close(gate)
+    #def switch_action_off(self, switch: Switch)->None:
+       #if switch.switch_off is None:
+            #return
+        #for j in switch.switch_off:
+            #if j.kind == Switch.Action.Kind.open_gate:
+                #gate = Gate(j.x,j.y,True)  
+                #self.action_open(gate)
+            #if j.kind == Switch.Action.Kind.close_gate:
+                #gate = Gate(j.x,j.y,False)
+                #self.action_close(gate)
 
-            if j.kind == Switch.Action.Kind.disable:
+            #if j.kind == Switch.Action.Kind.disable:
                
-               switch.disabled = True
+               #switch.disabled = True
 
    
-    def action_open(self, gate: Gate)->None:
-        for g in self.gate_list: 
-            if gate.x == (g.center_x-32)/64 and gate.y == (g.center_y-32)/64 :  #Converts center x and y to x and y coordinates (center_x-tilesize/2)/tilesize where tilesize = 64
-                self.open_gate_list.append(g)
-                self.gate_list.remove(g)
+    #def action_open(self, gate: Gate)->None:
+        #for g in self.gate_list: 
+            #if gate.x == (g.center_x-32)/64 and gate.y == (g.center_y-32)/64 :  #Converts center x and y to x and y coordinates (center_x-tilesize/2)/tilesize where tilesize = 64
+                #self.open_gate_list.append(g)
+                #self.gate_list.remove(g)
                # self.solid(self.gate_list)
     
   
-    def action_close(self, gate: Gate)->None:
-        for g in self.open_gate_list:
-            if gate.x == (g.center_x-32)/64 and gate.y == (g.center_y-32)/64 :
-                self.gate_list.append(g)
-                self.open_gate_list.remove(g)
+    #def action_close(self, gate: Gate)->None:
+        #for g in self.open_gate_list:
+            #if gate.x == (g.center_x-32)/64 and gate.y == (g.center_y-32)/64 :
+                #self.gate_list.append(g)
+               # self.open_gate_list.remove(g)
                # self.solid(self.gate_list)
         
             
@@ -688,3 +716,7 @@ class GameView(arcade.View):                                                    
         self.player_sprite.center_x = self.start_x                                      # Reset X
         self.player_sprite.center_y = self.start_y -150                                 # Reset Y
         arcade.play_sound(self.sound_gameover)
+
+    def fatal_error(self, error_message: str) -> None:
+        print(f"ERROR: {error_message}")
+        sys.exit(1) 

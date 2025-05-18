@@ -1,6 +1,6 @@
 import arcade 
 import os
-from modif import *
+from GameView import *
 import yaml 
 
 # Constants
