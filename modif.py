@@ -7,6 +7,7 @@ from monster import *
 
 import yaml
 from switch_gate import Switch, Gate
+from portal import Portal
 
 from PBlock import *
 from ConnectedCells import *
@@ -33,12 +34,13 @@ SYMBOLS = {
     "-": ":resources:/images/tiles/grassHalf_mid.png",  # Wall
     "x": ":resources:/images/tiles/boxCrate_double.png",  # Wall
     "*": ":resources:images/items/coinGold.png",  # Coin
-    "o": ":resources:/images/enemies/slimeBlue.png",  # Monster (slime)
+    "o": ":resources:/images/enemies/slimePurple.png",  # Monster (slime)
     "S": ":resources:/images/animated_characters/robot/robot_idle.png",  # Start
     "£": ":resources:/images/tiles/lava.png",  # No-go (lava)
-    "v": "assets/kenney-voxel-items-png/kenney-extended-enemies-png/bee_fly.png",   #Bat
+    "v": "assets/kenney-voxel-items-png/kenney-extended-enemies-png/Bat.png",   #Bat
     "E": ":resources:/images/tiles/signExit.png", #Exit
     "|": ":resources:/images/tiles/stoneCenter_rounded.png", #Gate
+    "P": "assets/kenney_simplified-platformer-pack/Purple Portal Sprite Sheet-2.png" #Portal
 }
 
 platform_chars = {"=","-","x","£","E","^"}
@@ -60,6 +62,7 @@ class GameView(arcade.View):                                                    
     open_gate_list : arcade.SpriteList[arcade.Sprite]
     switch_list: arcade.SpriteList[Switch]
     solid_list: arcade.SpriteList[arcade.Sprite]
+    portal_list: arcade.SpriteList[arcade.Sprite]
     #new_switch_list: arcade.SpriteList[arcade.Sprite]
     sprite_switch: arcade.SpriteList[arcade.Sprite]
     camera : arcade.camera.Camera2D
@@ -140,6 +143,7 @@ class GameView(arcade.View):                                                    
         #self.new_switch_list = arcade.SpriteList(use_spatial_hash=True)
         self.sprite_switch = arcade.SpriteList(use_spatial_hash=True)
         self.solid_list = arcade.SpriteList(use_spatial_hash=True)
+        self.portal_list = arcade.SpriteList(use_spatial_hash=True)
         
 
         self.player_sword: arcade.Sprite = arcade.Sprite(                       # Setup sword
@@ -184,6 +188,7 @@ class GameView(arcade.View):                                                    
         self.platforme_list.clear()
         self.gate_list.clear()
         self.sprite_switch.clear()
+        self.portal_list.clear()
       
  
         # Vérifie si le fichier existe
@@ -206,10 +211,7 @@ class GameView(arcade.View):                                                    
         lines.reverse()
 
        
-                                                                        # TO-DO: to handle incorrect files, e.g. no 3rd line, etc
-        self.next_map = lines[2].split(":")[-1].strip()         # The 3rd line in the file will have the reference to the next level, e.g. "next-map: map2.txt"
-                                            # Ignore first 3 lines and the very last one for the map
-        lines.reverse()                                         # Reverse line order (Arcade places (0,0) at the bottom)
+                                                                    
         map_height = len(lines)
         
 
@@ -254,8 +256,8 @@ class GameView(arcade.View):                                                    
 
                     if char == "S":  
                         self.player_sprite = s                  # Spawnpoint  
-                        self.start_x = x                        # Store start coordinates
-                        self.start_y = y 
+                        self.start_x = s.center_x                        # Store start coordinates
+                        self.start_y = s.center_y
 
                     elif char == "*":  
                         self.coin_list.append(s)                # add a coin to coins list
@@ -280,6 +282,9 @@ class GameView(arcade.View):                                                    
                         v.area_y = BAT_AREA_Y
                         v.frames = 0              
                         self.monsters_list.append(v)
+
+                    elif char == "P" :
+                        self.portal_list.append(s) #add portal to portal list
                     
                     elif char == "£":                          # add Lava to lava list
                         self.lava_list.append(s) 
@@ -344,6 +349,7 @@ class GameView(arcade.View):                                                    
             a.appearance.center_x = a.x * self.tile_size + self.tile_size/2
             a.appearance.center_y =  a.y * self.tile_size + self.tile_size/1.9  #using 1.9 to correct positional error 
             self.sprite_switch.append(a.appearance)
+    
         
 
            
@@ -367,6 +373,7 @@ class GameView(arcade.View):                                                    
             self.player_sprite_list.draw()
             self.gate_list.draw()
             self.sprite_switch.draw()
+            self.portal_list.draw()
            
                 
 
@@ -571,7 +578,9 @@ class GameView(arcade.View):                                                    
                     self.load_switches()
                     #if gate in self.gate_list:
                     #self.gate_list.remove(gate)
-                    
+
+        if self.player_sprite.center_y<-500:
+            self.reset_game()
                             
 
 
@@ -686,5 +695,5 @@ class GameView(arcade.View):                                                    
 
         self.score = 0
         self.player_sprite.center_x = self.start_x                                      # Reset X
-        self.player_sprite.center_y = self.start_y -150                                 # Reset Y
+        self.player_sprite.center_y = self.start_y                                # Reset Y
         arcade.play_sound(self.sound_gameover)
