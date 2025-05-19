@@ -29,9 +29,9 @@ Vous pouvez ajouter vos propres tâches si vous le jugez utile (p.ex. avec une d
 * [x] Panneau et lecture de prochaine map                             120
 * [x] Lecture de carte                                                180
 * [x]Creation d'un algo pour platformes en manuel                      90
-* [] Plateformes qui bougent                                          ??
-* [] Gates et levier                                                  ??
-* [] Lecture de flèches map                                           120 (min)
+* [x] Plateformes qui bougent                                          180
+* [x] Gates et levier                                                  ??
+* [x] Lecture de flèches map                                           360
 ---
 
 ## À faire (prochaine étape)
@@ -39,8 +39,8 @@ Vous pouvez ajouter vos propres tâches si vous le jugez utile (p.ex. avec une d
 Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour chacune/chacun.
 Par exemple :
 
-* Henri : finir les gates et ajuster les collisions
-* Stephan : finir le mouvement des platformes et du refactoring
+* Henri : faire les téléportations
+* Stephan : cas d'erreurs
 
 ---
 
@@ -67,7 +67,7 @@ Compréhension de la caractérisation du fichier JAMAL. Création d'un dict pour
 ### Semaine 11
 Le mouvement des platformes presque terminé. Création de nouveau fichier afin d'espacier le code, algo de lecture de carte trouvé. Il reste à gérer les fleches. Gates et levier terminés manque les collisions.
 ### Semaine 12
-Création algo pour lecture de flèches et finalisation des platformes bougeantes.
+Création algo pour lecture de flèches et finalisation des platformes bougeantes. Finalisation des platfornes et de lalecture des flèches. Gates complètement finies 
 ### Semaine 13
 
 ### Semaine 14

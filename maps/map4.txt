@@ -1,7 +1,6 @@
 width: 24
 height: 8
 next-map: maps/map5.txt
-
 switches:
   - x: 0
     y: 7
