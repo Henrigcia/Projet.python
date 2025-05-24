@@ -8,4 +8,3 @@ next-map: maps/map3.txt
     ---           
 S         o*     E
 =======£=£=£=£======
----

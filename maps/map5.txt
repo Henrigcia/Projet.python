@@ -1,20 +1,20 @@
 width: 42
 height: 14
-next-map: maps/map1.txt
+next-map: maps/map6.txt
 switches:
-    - x: 0
-      y: 10
-      switch_on:
-            - action: open-gate
-              x: 9
-              y: 5
-            - action: disable
-    - x: 20
-      y: 12
-      switch_on: 
-            - action: close-gate
-              x: 16
-              y: 1
+  - x: 0
+    y: 10
+    switch_on:
+          - action: open-gate
+            x: 9
+            y: 5
+          - action: disable
+  - x: 20
+    y: 12
+    switch_on: 
+          - action: close-gate
+            x: 16
+            y: 1
 gates:
   - x: 16
     y: 1

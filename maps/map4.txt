@@ -5,13 +5,15 @@ switches:
   - x: 0
     y: 7
     # this switch is off by default (no 'state')
-    # it opens the gate at position (6, 1), then disables itself
+    # it opens the portal at position (4,5), then disables itself
     # (that means we won't be able to switch it back off, so nothing to do there)
     switch_on:
-      - action: open-gate
-        x: 6
-        y: 1
-      - action: disable
+      - action: open-portal
+        x: 4
+        y: 5
+        go_x: 7
+        go_y: 1
+      
   - x: 8
     y: 6
     state: on # this switch is on by default
@@ -40,9 +42,9 @@ gates:
 ---
 ^     x           x
 --    x ^         x
-      x-----      |
+    P x-----      |
    ---x           =
       x   -----   =
 ---   x   x   |  x=
- S    |  xx * x  x=  E
+ S    x  xx * x  x=  E
 ========================

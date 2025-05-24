@@ -1,0 +1,65 @@
+width: 34
+height: 12
+next-map: maps/map1.txt
+switches:
+  - x: 5
+    y: 5
+    switch_on:
+          - action: open-portal
+            x: 5
+            y: 1
+            go_x: 5
+            go_y: 3
+    switch_off:
+          - action: open-portal
+            x: 5
+            y: 1
+            go_x: 5
+            go_y: 3
+  - x: 13
+    y: 5
+    switch_on: 
+          - action: close-gate
+            x: 8
+            y: 2
+          - action: close-gate
+            x: 19
+            y: 9  
+    switch_off:
+          - action: open-gate
+            x: 8
+            y: 2
+          - action: open-gate
+            x: 19
+            y: 9
+  - x: 33
+    y: 11
+    switch_on:
+        - action: open-gate          
+          x: 31
+          y: 2
+        - action: open-portal
+          x: 18
+          y: 1
+          go_x: 20
+          go_y: 7
+        - action: disable
+gates:
+  - x: 8
+    y: 2
+    state: open
+
+---
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+x    v       v     x             ^x
+x           v      x            xxx
+x*     v       v   |   o          x
+xx   xx-   ←←←←←x  xxxxxx     -   x
+x     x            x   Ex         x
+x     x-           xxxxxx  -     *x
+x    ^x      ^             v     -x
+x   xxx-     -      v        -v   x
+x   x   *                         x
+x   xxx£|££££££££££££££££££££££|£££
+x S  Px££££££££££ P **************£
+=£=================================

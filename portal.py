@@ -9,15 +9,19 @@ from enum import Enum, StrEnum
 
 
 
-class Portal:
+class Portal(arcade.Sprite):
+    x: int
+    y: int
     teleport_x: int
     teleport_y: int
     
     
 
 
-    def __init__(self, x: int, y: int ,a: bool)->None:
+    def __init__(self, x: int, y: int ,a: int, b: int)->None:
         self.x = x
         self.y = y
+        self.teleport_x = a
+        self.teleport_y = b
     
         

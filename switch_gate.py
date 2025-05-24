@@ -44,21 +44,25 @@ class Switch(arcade.Sprite):
         class Kind(StrEnum):
             open_gate = "open-gate"
             close_gate = "close-gate"
+            open_portal = "open-portal"
             disable = "disable"
         kind: Kind
         x: int
         y: int
+        go_x: int
+        go_y: int
 
     switch_on: list[Action] | None 
     switch_off: list[Action] | None 
     last_hit: float = 0
+    
    
 
     
 
     def update(self, delta_time: float = 1 / 60)->None:
         self.last_hit += delta_time
-       
+        
         super().update(delta_time)
     
     def change_gate(self, gate: Gate)->None:
@@ -123,6 +127,12 @@ class Switch(arcade.Sprite):
                         elif action.kind == Switch.Action.Kind.close_gate:
                             action.x = a["x"]
                             action.y = a["y"]
+                        elif action.kind == Switch.Action.Kind.open_portal:
+                            action.x = a["x"]
+                            action.y = a["y"]
+                            action.go_x = a["go_x"]
+                            action.go_y = a["go_y"]
+
                         new_switch.switch_on.append(action)
                 else: new_switch.switch_on = None
                     
@@ -139,6 +149,12 @@ class Switch(arcade.Sprite):
                         elif action.kind == Switch.Action.Kind.close_gate:
                             action.x = a["x"]
                             action.y = a["y"]
+                        elif action.kind == Switch.Action.Kind.open_portal:
+                            action.x = a["x"]
+                            action.y = a["y"]
+                            action.go_x = a["go_x"]
+                            action.go_y = a["go_y"]
+
                         new_switch.switch_off.append(action)
                 else: new_switch.switch_off = None
                 
