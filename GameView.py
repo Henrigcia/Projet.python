@@ -147,7 +147,6 @@ class GameView(arcade.View):                                                    
         self.portal_list = arcade.SpriteList(use_spatial_hash=True)
         
         
-        
 
         self.player_sword: arcade.Sprite = arcade.Sprite(                       # Setup sword
             "assets/kenney-voxel-items-png/sword_silver.png",
@@ -302,22 +301,20 @@ class GameView(arcade.View):                                                    
                                 if gate["x"] == col_index and gate["y"] == row_index:
                                     g_active = gate["state"] == "open"
                         if not g_active:
+
                             self.gate_list.append(s)
                         else:
                             self.open_gate_list.append(s)
                     else :
                         self.wall_list.append(s)
+
                         
         
         
         # -----------------------------------------------------------------------------------
     
 
-        #self.solid(self.gate_list)
-        #for gate in self.gate_list:
-            #gate.hit_box = arcade.hitbox.RotatableHitBox(
-                 #gate.texture.hit_box_points
-            #)
+       
                         
 
         blocks: Platforms = Platforms(set(ps_dict.keys()))                 # Convert the dict keys into the set of points (x,y) and create Platforms object
@@ -398,10 +395,15 @@ class GameView(arcade.View):                                                    
                             pb.add_platform(s)                              # Add the sprite to VBlock and recalculate individual boundaries for coherent movement
                             self.platforme_list.append(s)                   # Add the sprtite to the list of all platform block sprites for Arcade engine
 
+
+        self.solid_list.extend(self.wall_list)
+        for g in self.gate_list:
+            self.solid_list.append(g)
+
         self.player_sprite_list.append(self.player_sprite)                      # Add player
         self.physics_engine = arcade.PhysicsEnginePlatformer(                   # Initialize physics
             self.player_sprite,
-            walls=self.wall_list,
+            walls=self.solid_list,
             gravity_constant=PLAYER_GRAVITY,
             platforms = self.platforme_list
         )
@@ -441,6 +443,7 @@ class GameView(arcade.View):                                                    
             self.coin_list.draw()
             self.player_sprite_list.draw()
             self.gate_list.draw()
+            
             self.sprite_switch.draw()
             self.portal_list.draw()
            
@@ -557,6 +560,7 @@ class GameView(arcade.View):                                                    
             m.move_monster(self.wall_list)
 
         
+
         #Player's movement
         self.physics_engine.update()
 
@@ -735,6 +739,7 @@ class GameView(arcade.View):                                                    
             if gate.x == (g.center_x-32)/64 and gate.y == (g.center_y-32)/64 :  #Converts center x and y to x and y coordinates (center_x-tilesize/2)/tilesize where tilesize = 64
                 self.open_gate_list.append(g)
                 self.gate_list.remove(g)
+                self.solid_list.remove(g)
                 
     
   
@@ -743,6 +748,7 @@ class GameView(arcade.View):                                                    
             if gate.x == (g.center_x-32)/64 and gate.y == (g.center_y-32)/64 :
                 self.gate_list.append(g)
                 self.open_gate_list.remove(g)
+                self.solid_list.append(g)
                 
         
             
