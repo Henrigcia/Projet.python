@@ -113,7 +113,7 @@ class GameView(arcade.View):                                                    
         self.sound_coin = arcade.Sound(":resources:sounds/coin1.wav")
         self.sound_jump = arcade.Sound(":resources:sounds/jump1.wav" )
         self.sound_blob = arcade.Sound(":resources:/sounds/explosion1.wav")
-        self.sound_gameover = arcade.Sound(":resources:/sounds/gameover5.wav")
+        self.sound_gameover = arcade.Sound("assets/Doeraene-game-over-sound.wav")
         self.score = 0
         self.flop = 0 
 
