@@ -96,7 +96,7 @@ class Switch(arcade.Sprite):
 
         arr = s.split("---", 2)
         m = yaml.safe_load(arr[0])
-        switchlist= []
+        switchlist = []
         if "switches" in m:
             
             for i in m["switches"]:
@@ -143,6 +143,7 @@ class Switch(arcade.Sprite):
                 else: new_switch.switch_off = None
                 
                 if new_switch in switchlist:
+                    print("new_switch already in switchlist")
                     None
                 else: 
                     switchlist.append(new_switch)
