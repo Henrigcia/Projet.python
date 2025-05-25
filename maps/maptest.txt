@@ -1,6 +1,7 @@
 width: 34
 height: 12
 next-map: maps/map1.txt
+pass-score: 4
 ---
               
                        ↑
@@ -13,7 +14,7 @@ next-map: maps/map1.txt
             *  =      xxx
          ←←←x  =→→→→→→→→↓
              £££        ↓
-            ----
- S                        E
+      **    ----
+ S          **            E
 ===========================
 ---

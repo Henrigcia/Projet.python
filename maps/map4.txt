@@ -1,6 +1,7 @@
 width: 24
 height: 8
 next-map: maps/map5.txt
+pass-score: 15
 switches:
   - x: 0
     y: 7

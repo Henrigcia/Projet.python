@@ -1,6 +1,7 @@
 width: 20
 height: 6
 next-map: maps/map3.txt
+pass-score: 7
 ---
  *  
  -       

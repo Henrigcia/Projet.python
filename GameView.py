@@ -26,7 +26,7 @@ TILE_SIZE = 64
 ARROW_GRAVITY = 10
 ARROW_SPEED = 12
 
-FIRST_MAP = "maps/map6.txt"                 # First level map file; the each next level is referenced in the map file itself
+FIRST_MAP = "maps/maptest.txt"                 # First level map file; the each next level is referenced in the map file itself
 
 SYMBOLS = {
 
@@ -45,10 +45,10 @@ SYMBOLS = {
 }
 
 platform_chars = {"=","-","x","£","E"}
-up_chars = {"↑","U"}
-down_chars = {"↓","D"}
-left_chars = {"←","L"}
-right_chars = {"→","R"}
+up_chars = {"↑"}
+down_chars = {"↓"}
+left_chars = {"←"}
+right_chars = {"→"}
 
 class GameView(arcade.View):                                                    # The main game class that ihertits View
 
@@ -94,16 +94,14 @@ class GameView(arcade.View):                                                    
     connected_portal : arcade.Sprite
  
 
+    current_map : str                                                           # Current map file name
     next_map : str                                                              # Ref to the next level map
-    sortie_list : arcade.SpriteList[arcade.Sprite]                               #Exit sign                                                       
-    score : int
-    flop: int
-                                                                #Variable for the score
-   
+    score : int                                                                 # Variable for the score 
+    pass_score : int                                                            # Score needed to activate Exit
+    flop: int                                                                       
+    sortie_list : arcade.SpriteList[arcade.Sprite]                              # Exit sign                                                       
 
-
-                                                                #Variable for the score
-   
+                                                                
     def __init__(self) -> None:
         # Magical incantion: initialize the Arcade view
         super().__init__()
@@ -192,9 +190,12 @@ class GameView(arcade.View):                                                    
 
     def load_level(self, filename:str) -> None:                             # This will initiate a new game level    
 
-        self.monsters_list.clear()                              # Clears all sprites that will be loaded from the map
+        self.current_map = filename                                         # Note down map file 
+
+        self.monsters_list.clear()                                          # Clears all sprites that will be loaded from the map
         self.wall_list.clear()
         self.lava_list.clear()
+        self.coin_list.clear()                      
         self.sortie_list.clear()
         self.player_sprite_list.clear()
         self.platforme_list.clear()
@@ -202,9 +203,7 @@ class GameView(arcade.View):                                                    
         self.sprite_switch.clear()
         self.portals.clear()
         self.sprite_portal.clear()
-        self.solid_list.clear()
-        
-      
+        self.solid_list.clear()  
 
         if not os.path.exists(filename):
             self.fatal_error(f"The file {filename} not found")       
@@ -218,10 +217,10 @@ class GameView(arcade.View):                                                    
         arr: list[str] = st.split("---", 1)
         m = yaml.safe_load(arr[0])
         self.next_map = m["next-map"]
-        
+        self.pass_score = m["pass-score"]
+
         lines: list[str] = arr[1].splitlines()
         lines.reverse()                                         # Reverse line order (Arcade places (0,0) at the bottom)
-        map_height: int = len(lines)
 
         self.switch_list = Switch.load_switchgates(filename)    # <--- TO DO, type mypy ERROR
         self.load_switches()
@@ -255,8 +254,6 @@ class GameView(arcade.View):                                                    
 
         for row_index, line in enumerate(lines):                # Each line...
             for col_index, char in enumerate(line):             # ... read through each char 
-#                x = col_index * TILE_SIZE
-#                y = (map_height-row_index-1)*TILE_SIZE
 
                 if char in up_chars:                             # Here we will add an arrow coordinates to the relevant set of arrows
                     up_set.add((col_index, row_index))
@@ -338,12 +335,8 @@ class GameView(arcade.View):                                                    
                         
         
         
-        # -----------------------------------------------------------------------------------
-    
-
-       
-                        
-
+        # ----------------------------------------------------------------------------------- Platform Blocks ----------------------------------------------
+   
         blocks: Platforms = Platforms(set(ps_dict.keys()))                 # Convert the dict keys into the set of points (x,y) and create Platforms object
         ups:    VSeries = VSeries(up_set)                                  # Create VSeries object for arrows up
         downs:  VSeries = VSeries(down_set)                                # Create VSeries object for arrows down
@@ -426,6 +419,8 @@ class GameView(arcade.View):                                                    
                             if s in self.wall_list:                         # Remove from the static walls list to avoid double update()
                                 self.wall_list.remove(s)
 
+# ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
         self.solid_list.extend(self.wall_list)
         for g in self.gate_list:
             self.solid_list.append(g)
@@ -439,7 +434,6 @@ class GameView(arcade.View):                                                    
         )
         self.physics_engine.disable_multi_jump()
         self.physics_engine.can_jump()
-        print(len(self.lava_list))
                
     def load_switches(self)->None:
 
@@ -456,7 +450,8 @@ class GameView(arcade.View):                                                    
         self.clear()                                                            # always start with self.clear()
         with self.camera.activate():
             self.platforme_list.draw()
-            self.sortie_list.draw()
+            if self.score >= self.pass_score:                                   # Check if score is sufficient for the Exit to show up
+                self.sortie_list.draw()
             self.wall_list.draw()
             self.lava_list.draw()
             self.monsters_list.draw()
@@ -464,10 +459,7 @@ class GameView(arcade.View):                                                    
             self.player_sprite_list.draw()
             self.gate_list.draw()
             self.sprite_switch.draw()
-            self.portals.draw()
-           
-                
-           
+            self.portals.draw() 
 
             if self.weapon_active and self.change_weapon:   
                 self.sword_list.draw()
@@ -479,11 +471,13 @@ class GameView(arcade.View):                                                    
               
                 
         with self.camera2.activate():
-            text = arcade.Text(f" Score : {self.score}", 0 ,0, font_size = 25)     #Function for the score
+            text = arcade.Text(f"Score: {self.score}, you need at least: {self.pass_score}", 5 ,5, font_size = 16, color=arcade.color.DARK_BLUE_GRAY)     #Function for the score
         text.draw()
-        with self.camera2.activate():
-            text2 = arcade.Text(f" Flops d'Emilie: {self.flop}", 0 ,64, font_size = 25)     #Function for the score
-        text2.draw()
+
+        if self.flop > 0:
+            with self.camera2.activate():
+                text2 = arcade.Text(f"Flops d'Emilie: {self.flop}", 5 ,25, font_size = 16, color=arcade.color.DARK_RED)     #Function for the flops
+            text2.draw()
 
 
     def update_movement(self):
@@ -625,13 +619,9 @@ class GameView(arcade.View):                                                    
 
 
         # Check if exit the level            
-        if arcade.check_for_collision_with_list(self.player_sprite, self.sortie_list):
+        if self.score >= self.pass_score and arcade.check_for_collision_with_list(self.player_sprite, self.sortie_list):
             self.load_level(self.next_map) 
 
-
-        
-
-        
                                      
         for arrow in self.arrow_list:
             if arcade.check_for_collision_with_list(arrow, self.wall_list):
@@ -848,19 +838,7 @@ class GameView(arcade.View):                                                    
     def coordinates_to_center_z(x: float)->float:
         return x*TILE_SIZE+TILE_SIZE/2
          
-
-                
-        
-            
-
-    
-    
-    
-    
-
-
-
-      
+     
     
     def pan_camera_to_player(self, panning_fraction: float = 2.0):
         self.camera.position = arcade.math.smerp_2d(
@@ -874,11 +852,11 @@ class GameView(arcade.View):                                                    
     
     def reset_game(self):                                                               # This method will end and reset the game to the starting position
 
-        self.score = 0
+#        self.score = 0
         self.flop += 1
         self.player_sprite.center_x = self.start_x                                      # Reset X
-        self.player_sprite.center_y = self.start_y
-        self.load_level(FIRST_MAP)                                  # Reset Y
+        self.player_sprite.center_y = self.start_y                                      # Reset Y
+        self.load_level(self.current_map)                                               # Reload current level                                   
         arcade.play_sound(self.sound_gameover)
 
     def fatal_error(self, error_message: str) -> None:
