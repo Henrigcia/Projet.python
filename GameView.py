@@ -26,7 +26,7 @@ TILE_SIZE = 64
 ARROW_GRAVITY = 10
 ARROW_SPEED = 12
 
-FIRST_MAP = "maps/maptest.txt"                 # First level map file; the each next level is referenced in the map file itself
+FIRST_MAP = "maps/map6.txt"                 # First level map file; the each next level is referenced in the map file itself
 
 SYMBOLS = {
 
@@ -61,7 +61,7 @@ class GameView(arcade.View):                                                    
     platforme_list : arcade.SpriteList[arcade.Sprite]
     gate_list : arcade.SpriteList[arcade.Sprite]
     open_gate_list : arcade.SpriteList[arcade.Sprite]
-    switch_list: arcade.SpriteList[Switch]
+    switch_list: list[Switch]
     solid_list: arcade.SpriteList[arcade.Sprite]
     sprite_portal: arcade.SpriteList[arcade.Sprite]
     portals: arcade.SpriteList[arcade.Sprite]
@@ -145,7 +145,7 @@ class GameView(arcade.View):                                                    
         self.platforme_list = arcade.SpriteList(use_spatial_hash=True)
         self.gate_list = arcade.SpriteList(use_spatial_hash=True)
         self.open_gate_list = arcade.SpriteList(use_spatial_hash=True)
-        self.switch_list = arcade.SpriteList(use_spatial_hash=True)
+        
         self.new_switch_list = arcade.SpriteList(use_spatial_hash=True)
         self.sprite_switch = arcade.SpriteList(use_spatial_hash=True)
         self.solid_list = arcade.SpriteList(use_spatial_hash=True)
