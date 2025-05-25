@@ -26,7 +26,7 @@ TILE_SIZE = 64
 ARROW_GRAVITY = 10
 ARROW_SPEED = 12
 
-FIRST_MAP = "maps/map6.txt"                 # First level map file; the each next level is referenced in the map file itself
+FIRST_MAP = "maps/maptest.txt"                 # First level map file; the each next level is referenced in the map file itself
 
 SYMBOLS = {
 
@@ -190,7 +190,7 @@ class GameView(arcade.View):                                                    
         for g in gates:
             self.solid_list.append(g)
 
-    def load_level(self, filename):                             # This will initiate a new game level    
+    def load_level(self, filename:str) -> None:                             # This will initiate a new game level    
 
         self.monsters_list.clear()                              # Clears all sprites that will be loaded from the map
         self.wall_list.clear()
@@ -207,31 +207,23 @@ class GameView(arcade.View):                                                    
       
 
         if not os.path.exists(filename):
-            print(f"Erreur : Le fichier {filename} est introuvable !")       # TO-DO: handle correctly if file doesn't exist
-            return  
-
-        s = ""
+            self.fatal_error(f"The file {filename} not found")       
+             
+        st: str = ""
         
         with open(filename, "r", encoding="utf-8") as file:
             for line in file.readlines():
-                s += line
+                st += line
 
-        arr = s.split("---", 1)
+        arr: list[str] = st.split("---", 1)
         m = yaml.safe_load(arr[0])
-
         self.next_map = m["next-map"]
         
-        lines = arr[1].splitlines()
-       
-
-       
-                                                                        
+        lines: list[str] = arr[1].splitlines()
         lines.reverse()                                         # Reverse line order (Arcade places (0,0) at the bottom)
-        map_height = len(lines)
-        
+        map_height: int = len(lines)
 
-        self.switch_list = Switch.load_switchgates(filename)
-        
+        self.switch_list = Switch.load_switchgates(filename)    # <--- TO DO, type mypy ERROR
         self.load_switches()
 
         for x in Switch.load_switchgates(filename):
@@ -255,9 +247,7 @@ class GameView(arcade.View):                                                    
                         self.portal_list.append(p)
                 
 
-        
-
-        ps_dict:    dict[tuple[int,int], arcade.Sprite] = {}    # Here we initialize an empty dict which will contain the coordinates of the platform symbols and coorspinding Sprite
+        ps_dict:   dict[tuple[int,int], arcade.Sprite] = {}    # Here we initialize an empty dict which will contain the coordinates of the platform symbols and coorspinding Sprite
         up_set:    set[tuple[int,int]] = set()                 # Here we will store the coordinates of each type of arrows 
         down_set:  set[tuple[int,int]] = set()
         left_set:  set[tuple[int,int]] = set()
@@ -265,8 +255,8 @@ class GameView(arcade.View):                                                    
 
         for row_index, line in enumerate(lines):                # Each line...
             for col_index, char in enumerate(line):             # ... read through each char 
-                x = col_index * TILE_SIZE
-                y = (map_height-row_index-1)*TILE_SIZE
+#                x = col_index * TILE_SIZE
+#                y = (map_height-row_index-1)*TILE_SIZE
 
                 if char in up_chars:                             # Here we will add an arrow coordinates to the relevant set of arrows
                     up_set.add((col_index, row_index))
@@ -289,10 +279,8 @@ class GameView(arcade.View):                                                    
                         ps_dict[(col_index, row_index)] = s          # Here it stores it in a dict the sprite and its coordinates (x,y) as the dict key
                     
                     if char == "S": 
-                        
                         self.player_sprite = s
-                        self.player_sprite.scale = 0.2 * 0.25
-                                             # Spawnpoint  
+                        self.player_sprite.scale = (0.05, 0.05)     # Spawnpoint  
                         self.start_x = s.center_x                   # Store start coordinates
                         self.start_y = s.center_y
                        
@@ -301,12 +289,12 @@ class GameView(arcade.View):                                                    
                         self.coin_list.append(s)                # add a coin to coins list
 
                     elif char == "o":  
-                        b = Blob(texture, scale=0.5)            # add Blob monster to monsters list
-                        b.center_x = center_x
-                        b.center_y = center_y
-                        b.change_x = BLOB_MOVEMENT_SPEED        # Blob moves only horizonally
-                        b.change_y = 0                     
-                        self.monsters_list.append(b)
+                        mb = Blob(texture, scale=0.5)            # add Blob monster to monsters list
+                        mb.center_x = center_x
+                        mb.center_y = center_y
+                        mb.change_x = BLOB_MOVEMENT_SPEED        # Blob moves only horizonally
+                        mb.change_y = 0                     
+                        self.monsters_list.append(mb)
 
                     elif char == "v" :
                         v = Bat(texture, scale=0.5)            # add Bat monster to monsters list
@@ -322,16 +310,17 @@ class GameView(arcade.View):                                                    
                         self.monsters_list.append(v)
 
                     elif char == "P" :
-                        s.scale = 0.4 * 0.2
-                        self.sprite_portal.append(s) #add portal to portal list
+                        s.scale = (0.08, 0.08)
+                        self.sprite_portal.append(s)            #add portal to portal list
                     
                     elif char == "£":                          # add Lava to lava list
                         self.lava_list.append(s) 
+
                     elif char == "E":
                         self.sortie_list.append(s)             # add Exit to the list
                     
                     elif char == "|":
-                        g_active = False
+                        g_active: bool = False
                         if "gates" in m:
                             for gate in m["gates"]:
                                 if gate["x"] == col_index and gate["y"] == row_index:
@@ -413,26 +402,29 @@ class GameView(arcade.View):                                                    
 
                     if sum([rights_no, lefts_no]) != 0:                                # The block will move HORIZONTALLY
                         change_x: float = 1 if rights_no == 1 else -1 if lefts_no == 1 else 0           # ... set initial horizontal speed
-                        pb: HBlock = HBlock(                                                          # Create a new HBlock object for this block with the screen movement boundaries
+                        hb: HBlock = HBlock(                                                          # Create a new HBlock object for this block with the screen movement boundaries
                             boundary_left * TILE_SIZE + TILE_SIZE/2, 
                             boundary_right * TILE_SIZE + TILE_SIZE/2)
                         for c in b:                                         # For each cell in this block...
                             s = ps_dict[c]                                  # ...get the corresponding sprite from dictionary using the tuple coordinates
                             s.change_x = change_x                           # Set initial horizontal speed
-                            pb.add_platform(s)                              # Add the sprite to HBlock and recalculate individual boundaries for coherent movement
+                            hb.add_platform(s)                              # Add the sprite to HBlock and recalculate individual boundaries for coherent movement
                             self.platforme_list.append(s)                   # Add the sprtite to the list of all platform block sprites for Arcade engine
+                            if s in self.wall_list:                         # Remove from the static walls list to avoid double update()
+                                self.wall_list.remove(s)
 
                     if sum([ups_no, downs_no]) != 0:                                # The block will move VERTICALLY
                         change_y: float = 1 if ups_no == 1 else -1 if downs_no == 1 else 0           # ... set initial vertical speed
-                        pb: VBlock = VBlock(                                                          # Create a new VBlock object for this block with the screen movement boundaries
+                        vb: VBlock = VBlock(                                                          # Create a new VBlock object for this block with the screen movement boundaries
                             boundary_bottom * TILE_SIZE + TILE_SIZE/2, 
                             boundary_top * TILE_SIZE + TILE_SIZE/2)
                         for c in b:                                         # For each cell in this block...
                             s = ps_dict[c]                                  # ...get the corresponding sprite from dictionary using the tuple coordinates
                             s.change_y = change_y                           # Set initial vertical speed
-                            pb.add_platform(s)                              # Add the sprite to VBlock and recalculate individual boundaries for coherent movement
+                            vb.add_platform(s)                              # Add the sprite to VBlock and recalculate individual boundaries for coherent movement
                             self.platforme_list.append(s)                   # Add the sprtite to the list of all platform block sprites for Arcade engine
-
+                            if s in self.wall_list:                         # Remove from the static walls list to avoid double update()
+                                self.wall_list.remove(s)
 
         self.solid_list.extend(self.wall_list)
         for g in self.gate_list:
@@ -447,6 +439,7 @@ class GameView(arcade.View):                                                    
         )
         self.physics_engine.disable_multi_jump()
         self.physics_engine.can_jump()
+        print(len(self.lava_list))
                
     def load_switches(self)->None:
 
@@ -458,18 +451,7 @@ class GameView(arcade.View):                                                    
             a.appearance.center_y = self.coordinates_to_center_z(a.y)  
             self.sprite_switch.append(a.appearance)
     
-        
-
-           
-       
-            
-
-
-
-        
-        
-       
-
+ 
     def on_draw(self) -> None:                                                  # Render the sreen
         self.clear()                                                            # always start with self.clear()
         with self.camera.activate():
@@ -625,9 +607,7 @@ class GameView(arcade.View):                                                    
                 
             self.portals.remove(self.connected_portal)
         
-        
 
-        #Player's movement
         self.physics_engine.update()
 
         self.pan_camera_to_player(CAMERA_PAN_SPEED)
@@ -641,7 +621,8 @@ class GameView(arcade.View):                                                    
         
         #Check lavas hit
         if arcade.check_for_collision_with_list(self.player_sprite, self.lava_list):
-           self.reset_game()
+           self.reset_game()        
+
 
         # Check if exit the level            
         if arcade.check_for_collision_with_list(self.player_sprite, self.sortie_list):

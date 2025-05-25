@@ -39,8 +39,8 @@ Vous pouvez ajouter vos propres tâches si vous le jugez utile (p.ex. avec une d
 Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour chacune/chacun.
 Par exemple :
 
-* Henri : faire les téléportations
-* Stephan : cas d'erreurs
+* Henri : tests
+* Stephan : Collisions lave et tests
 
 ---
 
@@ -69,5 +69,6 @@ Le mouvement des platformes presque terminé. Création de nouveau fichier afin 
 ### Semaine 12
 Création algo pour lecture de flèches et finalisation des platformes bougeantes. Finalisation des platfornes et de lalecture des flèches. Gates complètement finies 
 ### Semaine 13
-
+Finalisation des gates et platformes. Refactoring et correction des erreurs par rapport a mypy. 
 ### Semaine 14
+Finalisation du code refactoring et tests.
