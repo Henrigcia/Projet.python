@@ -2,6 +2,38 @@ width: 34
 height: 12
 next-map: maps/map1.txt
 pass-score: 4
+switches:
+  - x: 6
+    y: 2
+    switch_on:
+      - action: open-portal
+        x: 10
+        y: 2
+        go_x: 4
+        go_y: 2
+    switch_off:
+      - action: open-portal
+        x: 10
+        y: 2
+        go_x: 4
+        go_y: 2
+  - x: 7
+    y: 2
+    switch_on: 
+      - action: open-portal
+        x: 12
+        y: 2
+        go_x: 15
+        go_y: 2
+
+    switch_off:
+      - action: open-portal
+        x: 12
+        y: 2
+        go_x: 15
+        go_y: 2
+  
+
 ---
               
                        ↑
@@ -15,6 +47,6 @@ pass-score: 4
          ←←←x  =→→→→→→→→↓
              £££        ↓
       **    ----
- S          **            E
+ S    ^^  P P             E
 ===========================
----
+

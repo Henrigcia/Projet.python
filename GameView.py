@@ -13,7 +13,7 @@ from portal import Portal
 
 from PBlock import *
 from ConnectedCells import *
-
+from typing import cast
 
 PLAYER_MOVEMENT_SPEED = 5
 PLAYER_GRAVITY = 0.5
@@ -26,14 +26,14 @@ TILE_SIZE = 64
 ARROW_GRAVITY = 10
 ARROW_SPEED = 12
 
-FIRST_MAP = "maps/maptest.txt"                 # First level map file; the each next level is referenced in the map file itself
+FIRST_MAP = "maps/map1.txt"                 # First level map file; the each next level is referenced in the map file itself
 
 SYMBOLS = {
 
     "=": ":resources:images/tiles/grassMid.png",  # Wall
     "-": ":resources:/images/tiles/grassHalf_mid.png",  # Wall
     "x": ":resources:/images/tiles/boxCrate_double.png",  # Wall
-    "*": ":resources:images/items/coinGold.png",  # Coin
+    "*": "assets/Doeraene-coin.png",  # Coin
     "o": ":resources:/images/enemies/slimePurple.png",  # Monster (slime)
     "S": "assets/Doeraene.png",  # Start
     "£": ":resources:/images/tiles/lava.png",  # No-go (lava)
@@ -63,7 +63,7 @@ class GameView(arcade.View):                                                    
     open_gate_list : arcade.SpriteList[arcade.Sprite]
     switch_list: list[Switch]
     solid_list: arcade.SpriteList[arcade.Sprite]
-    sprite_portal: arcade.SpriteList[arcade.Sprite]
+    sprite_portal: arcade.SpriteList[Portal]
     portals: arcade.SpriteList[arcade.Sprite]
     new_switch_list: arcade.SpriteList[arcade.Sprite]
     sprite_switch: arcade.SpriteList[arcade.Sprite]
@@ -91,7 +91,8 @@ class GameView(arcade.View):                                                    
     arrow_active: bool = False
     arrow_speed_vec : arcade.Vec2 = arcade.Vec2(0,0)
     switch: Switch
-    connected_portal : arcade.Sprite
+    current_portal: Portal
+   
  
 
     current_map : str                                                           # Current map file name
@@ -150,6 +151,7 @@ class GameView(arcade.View):                                                    
         self.sprite_portal = arcade.SpriteList(use_spatial_hash=True)
         self.portal_list = []
         self.portals = arcade.SpriteList(use_spatial_hash=True)
+        self.current_portal = Portal(0,0,0,0)
         
         
 
@@ -176,11 +178,7 @@ class GameView(arcade.View):                                                    
         self.weapon_active = False
         self.Vecteur=arcade.Vec3(0,0)
         self.Vecteur_sword=arcade.Vec2(0,0)
-        self.connected_portal: arcade.Sprite = arcade.Sprite(
-            "assets/purple-portal.png",
-            scale = 0.4*0.2
-        )
-        
+     
 
         
     def solid(self, gates:arcade.SpriteList)->None:
@@ -204,6 +202,8 @@ class GameView(arcade.View):                                                    
         self.portals.clear()
         self.sprite_portal.clear()
         self.solid_list.clear()  
+        self.pass_score = 0
+        self.score = 0
 
         if not os.path.exists(filename):
             self.fatal_error(f"The file {filename} not found")       
@@ -217,12 +217,12 @@ class GameView(arcade.View):                                                    
         arr: list[str] = st.split("---", 1)
         m = yaml.safe_load(arr[0])
         self.next_map = m["next-map"]
-        self.pass_score = m["pass-score"]
+        #self.pass_score = m["pass-score"] 
 
         lines: list[str] = arr[1].splitlines()
         lines.reverse()                                         # Reverse line order (Arcade places (0,0) at the bottom)
 
-        self.switch_list = Switch.load_switchgates(filename)    # <--- TO DO, type mypy ERROR
+        self.switch_list = Switch.load_switchgates(filename)   
         self.load_switches()
 
         for x in Switch.load_switchgates(filename):
@@ -283,7 +283,11 @@ class GameView(arcade.View):                                                    
                        
 
                     elif char == "*":  
-                        self.coin_list.append(s)                # add a coin to coins list
+
+                        self.coin_list.append(s)  
+                        s.scale_x = 0.05
+                        s.scale_y = 0.05
+                        self.pass_score += 1             # add a coin to coins list
 
                     elif char == "o":  
                         mb = Blob(texture, scale=0.5)            # add Blob monster to monsters list
@@ -308,7 +312,8 @@ class GameView(arcade.View):                                                    
 
                     elif char == "P" :
                         s.scale = (0.08, 0.08)
-                        self.sprite_portal.append(s)            #add portal to portal list
+                        s.__class__ = Portal
+                        self.sprite_portal.append(cast(Portal,s))            #add portal to portal list
                     
                     elif char == "£":                          # add Lava to lava list
                         self.lava_list.append(s) 
@@ -471,12 +476,12 @@ class GameView(arcade.View):                                                    
               
                 
         with self.camera2.activate():
-            text = arcade.Text(f"Score: {self.score}, you need at least: {self.pass_score}", 5 ,5, font_size = 16, color=arcade.color.DARK_BLUE_GRAY)     #Function for the score
+            text = arcade.Text(f"Score: {self.score}/{self.pass_score}", 5 ,5, font_size = 16, color=arcade.color.DARK_BLUE_GRAY)     #Function for the score
         text.draw()
 
-        if self.flop > 0:
+        if self.flop >= 0:
             with self.camera2.activate():
-                text2 = arcade.Text(f"Flops d'Emilie: {self.flop}", 5 ,25, font_size = 16, color=arcade.color.DARK_RED)     #Function for the flops
+                text2 = arcade.Text(f"Number of deaths: {self.flop}", 5 ,30, font_size = 16, color=arcade.color.DARK_RED)     #Function for the flops
             text2.draw()
 
 
@@ -557,7 +562,6 @@ class GameView(arcade.View):                                                    
                     
                 for a in self.switch_list:
                     if self.weapon_active and self.toggle(a, self.player_sword):
-                        print("Doerane")
                         a.update()
                         self.load_switches()
                     
@@ -586,20 +590,31 @@ class GameView(arcade.View):                                                    
             m.move_monster(self.wall_list)
 
         self.i += delta_time
-        j=0
-        if self.connected_portal in self.portals and self.i<2 and self.i>1:            
-            for k in self.portal_list:
-                if k.teleport_x == self.center_z_to_coordinates(self.connected_portal.center_x) and k.teleport_y == self.center_z_to_coordinates(self.connected_portal.center_y) and j==0:
-                    print("step 1")
-                    for s in self.sprite_portal:
-                        if s.center_x == self.coordinates_to_center_z(k.x) and s.center_y == self.coordinates_to_center_z(k.y):
-                            print("step 2")
-                            print(f"{self.center_z_to_coordinates(s.center_x)},{self.center_z_to_coordinates(s.center_y)}")
-                            self.portals.remove(s)
-                            j += 1
+        
+        #for p in self.portal_list:
+          #  if p.connected in self.portals and self.i<2 and self.i>1:   
+             #   self.portals.remove(p.connected)   
+              #  print("connected removed from portals")   
+              #  
+               # for s in self.sprite_portal:
+
+                 #   print(f"{self.center_z_to_coordinates(s.center_x)},{self.center_z_to_coordinates(s.center_y)}")
+                  #  print(f"{p.x},{p.y}")
+                  #  if s.center_x == self.coordinates_to_center_z(p.x) and s.center_y == self.coordinates_to_center_z(p.y):
+                   #     self.portals.remove(s)
+                    #    print("portal removed from portals")
+
+        if self.i<2 and self.i>1:
+            for w in self.portals:
+                print(hasattr(w, "connected"))
+                if hasattr(w, "connected") and self.current_portal.x == self.center_z_to_coordinates(w.center_x) and self.current_portal.y == self.center_z_to_coordinates(w.center_y):
+                    self.portals.remove(w)
+                    self.portals.remove(w.connected)
+            
+
                             
                 
-            self.portals.remove(self.connected_portal)
+                
         
 
         self.physics_engine.update()
@@ -703,16 +718,16 @@ class GameView(arcade.View):                                                    
         if self.player_sprite.center_y<-500:
             self.reset_game()
         
-        for p in self.portals:
-            if arcade.check_for_collision(self.player_sprite, p):
+        for u in self.portals:
+            if arcade.check_for_collision(self.player_sprite, u):
                 for a in self.portal_list:
-                    if (p.center_x-32)/64 == a.x and (p.center_y-32)/64 == a.y:
-                        
+                    if self.center_z_to_coordinates(u.center_x) == a.x and self.center_z_to_coordinates(u.center_y) == a.y:
+                        self.current_portal = a
                         self.player_sprite.center_x = self.coordinates_to_center_z(a.teleport_x)
-                        self.player_sprite.center_y =self.coordinates_to_center_z(a.teleport_y)
+                        self.player_sprite.center_y = self.coordinates_to_center_z(a.teleport_y)
                         self.i = 0
 
-        if self.player_sprite.change_x * self.player_sprite.scale_x < 0 :
+        if self.player_sprite.change_x * self.player_sprite.scale_x < 0 :  #Sprite faces moving direction
             self.player_sprite.scale_x *= -1
                    
                             
@@ -819,16 +834,34 @@ class GameView(arcade.View):                                                    
                 self.solid_list.append(g)
     
     def action_portal(self, portal: Portal)->None:
-        connected: Portal
+        
         for p in self.sprite_portal:
             if portal.x == self.center_z_to_coordinates(p.center_x) and portal.y == self.center_z_to_coordinates(p.center_y) :
-                self.connected_portal.center_x = self.coordinates_to_center_z(portal.teleport_x) 
-                self.connected_portal.center_y = self.coordinates_to_center_z(portal.teleport_y) 
-                if self.connected_portal in self.portals or p in self.portals:
+                portal.connected =  arcade.Sprite(
+                "assets/purple-portal.png",
+                scale = 0.4*0.2
+                )
+                portal.connected.center_x = self.coordinates_to_center_z(portal.teleport_x) 
+                portal.connected.center_y = self.coordinates_to_center_z(portal.teleport_y) 
+                print(portal.connected.center_x)
+                print(portal.connected.center_y)
+
+                if portal.connected in self.portals:
+                    print(portal.connected.center_x)
+                    print("connected already in portals")
                     return
-                else:
-                    self.portals.append(self.connected_portal)
-                    self.portals.append(p)
+                
+                if  p in self.portals:
+
+                    print("p already in portals")
+                    return
+                
+                #else:
+                self.portals.append(portal.connected)
+                p.connected = portal.connected
+                self.portals.append(p)
+                print(f"{p.center_x},{p.center_y}")
+                print("portal and connected added to portals")
 
     @staticmethod
     def center_z_to_coordinates(z: float)->float:
@@ -856,7 +889,7 @@ class GameView(arcade.View):                                                    
         self.flop += 1
         self.player_sprite.center_x = self.start_x                                      # Reset X
         self.player_sprite.center_y = self.start_y                                      # Reset Y
-        self.load_level(self.current_map)                                               # Reload current level                                   
+       #self.load_level(self.current_map)                                               # Reload current level                                   
         arcade.play_sound(self.sound_gameover)
 
     def fatal_error(self, error_message: str) -> None:
