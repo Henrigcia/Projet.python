@@ -595,8 +595,7 @@ class GameView(arcade.View):                                                    
                 if hasattr(w, "connected") and self.current_portal.x == self.center_z_to_coordinates(w.center_x) and self.current_portal.y == self.center_z_to_coordinates(w.center_y):
                     self.portals.remove(w)
                     self.portals.remove(w.connected)
-        
-
+    
         self.physics_engine.update()
 
         self.pan_camera_to_player(CAMERA_PAN_SPEED)
@@ -609,7 +608,6 @@ class GameView(arcade.View):                                                    
             self.score += 1
         
         #Check lavas hit
-        #self.intersection_list = [z for z in self.platforme_list if z in self.lava_list]
         if len(arcade.check_for_collision_with_list(self.player_sprite, self.lava_list)) != 0:
            self.reset_game()        
 
@@ -848,11 +846,10 @@ class GameView(arcade.View):                                                    
     
     def reset_game(self):                                                               # This method will end and reset the game to the starting position
 
-#        self.score = 0
+
         self.flop += 1
         self.player_sprite.center_x = self.start_x                                      # Reset X
-        self.player_sprite.center_y = self.start_y                                      # Reset Y
-       #self.load_level(self.current_map)                                               # Reload current level                                   
+        self.player_sprite.center_y = self.start_y                                      # Reset Y                                 
         arcade.play_sound(self.sound_gameover)
 
     def fatal_error(self, error_message: str) -> None:
