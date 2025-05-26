@@ -71,4 +71,4 @@ Création algo pour lecture de flèches et finalisation des platformes bougeante
 ### Semaine 13
 Finalisation des gates et platformes. Refactoring et correction des erreurs par rapport a mypy. 
 ### Semaine 14
-Finalisation du code refactoring et tests.
+Finalisation du code refactoring et tests. Creation des contraintes pour le changement de carte avec les pieces.

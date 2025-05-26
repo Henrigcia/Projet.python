@@ -26,7 +26,7 @@ TILE_SIZE = 64
 ARROW_GRAVITY = 10
 ARROW_SPEED = 12
 
-FIRST_MAP = "maps/map1.txt"                 # First level map file; the each next level is referenced in the map file itself
+FIRST_MAP = "maps/maptest.txt"                 # First level map file; the each next level is referenced in the map file itself
 
 SYMBOLS = {
 
@@ -67,6 +67,7 @@ class GameView(arcade.View):                                                    
     portals: arcade.SpriteList[arcade.Sprite]
     new_switch_list: arcade.SpriteList[arcade.Sprite]
     sprite_switch: arcade.SpriteList[arcade.Sprite]
+    intersection_list : arcade.SpriteList[arcade.Sprite]
     camera : arcade.camera.Camera2D
     sound : arcade.Sound
     sound_2 : arcade.Sound
@@ -144,6 +145,8 @@ class GameView(arcade.View):                                                    
         self.platforme_list = arcade.SpriteList(use_spatial_hash=True)
         self.gate_list = arcade.SpriteList(use_spatial_hash=True)
         self.open_gate_list = arcade.SpriteList(use_spatial_hash=True)
+        self.intersection_list = arcade.SpriteList(use_spatial_hash=True)
+
         
         self.new_switch_list = arcade.SpriteList(use_spatial_hash=True)
         self.sprite_switch = arcade.SpriteList(use_spatial_hash=True)
@@ -281,7 +284,6 @@ class GameView(arcade.View):                                                    
                         self.start_x = s.center_x                   # Store start coordinates
                         self.start_y = s.center_y
                        
-
                     elif char == "*":  
 
                         self.coin_list.append(s)  
@@ -337,9 +339,6 @@ class GameView(arcade.View):                                                    
 
                         self.wall_list.append(s)
 
-                        
-        
-        
         # ----------------------------------------------------------------------------------- Platform Blocks ----------------------------------------------
    
         blocks: Platforms = Platforms(set(ps_dict.keys()))                 # Convert the dict keys into the set of points (x,y) and create Platforms object
@@ -423,7 +422,7 @@ class GameView(arcade.View):                                                    
                             self.platforme_list.append(s)                   # Add the sprtite to the list of all platform block sprites for Arcade engine
                             if s in self.wall_list:                         # Remove from the static walls list to avoid double update()
                                 self.wall_list.remove(s)
-
+                               
 # ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
         self.solid_list.extend(self.wall_list)
@@ -483,19 +482,18 @@ class GameView(arcade.View):                                                    
             with self.camera2.activate():
                 text2 = arcade.Text(f"Number of deaths: {self.flop}", 5 ,30, font_size = 16, color=arcade.color.DARK_RED)     #Function for the flops
             text2.draw()
-
+        if self.flop > 5:
+            self.flop = 0
+            self.load_level(FIRST_MAP)
 
     def update_movement(self):
         speed = 0
         if self.right_pressed and not self.left_pressed:
-            speed = +PLAYER_MOVEMENT_SPEED
-            
-                
+            speed = +PLAYER_MOVEMENT_SPEED       
             
         elif self.left_pressed and not self.right_pressed:
             speed = -PLAYER_MOVEMENT_SPEED
-            
-            
+        
         else: 
             speed = 0
         self.player_sprite.change_x = speed
@@ -590,19 +588,6 @@ class GameView(arcade.View):                                                    
             m.move_monster(self.wall_list)
 
         self.i += delta_time
-        
-        #for p in self.portal_list:
-          #  if p.connected in self.portals and self.i<2 and self.i>1:   
-             #   self.portals.remove(p.connected)   
-              #  print("connected removed from portals")   
-              #  
-               # for s in self.sprite_portal:
-
-                 #   print(f"{self.center_z_to_coordinates(s.center_x)},{self.center_z_to_coordinates(s.center_y)}")
-                  #  print(f"{p.x},{p.y}")
-                  #  if s.center_x == self.coordinates_to_center_z(p.x) and s.center_y == self.coordinates_to_center_z(p.y):
-                   #     self.portals.remove(s)
-                    #    print("portal removed from portals")
 
         if self.i<2 and self.i>1:
             for w in self.portals:
@@ -610,11 +595,6 @@ class GameView(arcade.View):                                                    
                 if hasattr(w, "connected") and self.current_portal.x == self.center_z_to_coordinates(w.center_x) and self.current_portal.y == self.center_z_to_coordinates(w.center_y):
                     self.portals.remove(w)
                     self.portals.remove(w.connected)
-            
-
-                            
-                
-                
         
 
         self.physics_engine.update()
@@ -629,7 +609,8 @@ class GameView(arcade.View):                                                    
             self.score += 1
         
         #Check lavas hit
-        if arcade.check_for_collision_with_list(self.player_sprite, self.lava_list):
+        #self.intersection_list = [z for z in self.platforme_list if z in self.lava_list]
+        if len(arcade.check_for_collision_with_list(self.player_sprite, self.lava_list)) != 0:
            self.reset_game()        
 
 
@@ -653,7 +634,7 @@ class GameView(arcade.View):                                                    
 
         if arcade.check_for_collision_with_list(self.player_sprite, self.monsters_list):
             self.reset_game()
-        
+
         for a in self.arrow_list:                                                           # Monster killed by arrows
             hits = arcade.check_for_collision_with_list(a, self.monsters_list)
             for h in hits:
@@ -690,9 +671,7 @@ class GameView(arcade.View):                                                    
             self.player_bow.center_x = self.pointx -18
             
         self.player_bow.center_y = self.pointy +6
-
-       
-            
+  
 
         #Arrow
         for arrow in self.arrow_list: 
@@ -704,9 +683,6 @@ class GameView(arcade.View):                                                    
 
             arrow.update()
 
-        
-
-        
 
         for a in self.arrow_list:                                                           
             for s in self.switch_list:
@@ -728,22 +704,9 @@ class GameView(arcade.View):                                                    
                         self.i = 0
 
         if self.player_sprite.change_x * self.player_sprite.scale_x < 0 :  #Sprite faces moving direction
-            self.player_sprite.scale_x *= -1
-                   
-                            
-
-
-
-
+            self.player_sprite.scale_x *= -1    
         
-        
-
-      
-         
-        
-    #Switches
-    
-    
+    #Switches  
     def toggle(self, switch: Switch, player: arcade.Sprite)->bool:
 
         if switch.last_hit < 0.4:

@@ -55,8 +55,6 @@ class ConnectedCells:
                 island = self.DFS(cell)                # ...build a new island from this cell using DFS 
                 self.Islands.append(island)                 # Add it to the list of islands
 
-
-
 class Platforms(ConnectedCells):
 
     def get_neighbors(self, cell: tuple[int,int]) -> set[tuple[int, int]]:                         
