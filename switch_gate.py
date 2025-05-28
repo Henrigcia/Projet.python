@@ -20,14 +20,13 @@ class Gate:
     x: int
     y: int 
     active: bool
-    #spriteg = ":resources:/images/tiles/stoneCenter_rounded.png"
-    def __init__(self, x: int, y: int ,a: bool)->None:
+    def __init__(self, x: int, y: int ,a: bool) -> None:
         self.x = x
         self.y = y
         self.active = a
 
         
-    def open(self):
+    def open(self) -> None:
         self.active = not self.active
     
 
@@ -60,21 +59,17 @@ class Switch(arcade.Sprite):
 
     
 
-    def update(self, delta_time: float = 1 / 60)->None:
+    def update(self, delta_time: float = 1 / 60) -> None:
         self.last_hit += delta_time
         
         super().update(delta_time)
     
-    def change_gate(self, gate: Gate)->None:
+    def change_gate(self, gate: Gate) -> None:
         gate.active = not gate.active
-    
-        #not switch.disabled and 
-    
-   
-                
+
                 
     @staticmethod
-    def switchdraw(switch: Switch)->arcade.Sprite:
+    def switchdraw(switch: Switch) -> arcade.Sprite:
         if switch.status:
             return arcade.Sprite(":resources:/images/tiles/leverRight.png",
                            scale = 0.7 * 0.8)
@@ -91,7 +86,7 @@ class Switch(arcade.Sprite):
 
         if not os.path.exists(filename):
 
-            raise ValueError(f"Erreur : Le fichier {filename} est introuvable !")       # TO-DO: handle correctly if file doesn't exist
+            raise ValueError(f"Error : The file {filename} doesn't exist !")       # TO-DO: handle correctly if file doesn't exist
 
         s = ""
         with open(filename, "r", encoding="utf-8") as file:

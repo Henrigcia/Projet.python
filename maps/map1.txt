@@ -1,11 +1,11 @@
 width: 20
 height: 6
-next-map: maps/map2.txt
+next-map: end
 pass-score: 5
 ---    
-*v    -  -  
+*Ev   -  -  
 ---→→      v  -→→→
      o*        *o   
     ---        -
- S      P   *o    *E 
-====================
+ S      P   *o    * 
+====££==============

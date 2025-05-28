@@ -1,6 +1,6 @@
 width: 34
 height: 12
-next-map: maps/map1.txt
+next-map: end
 pass-score: 3
 switches:
   - x: 5

@@ -11,27 +11,31 @@ Vous pouvez ajouter vos propres tâches si vous le jugez utile (p.ex. avec une d
 
 * [x] Créer le LOG.md                                                  1
 * [x] S'inscrire en binôme                                             1
-* [x] Découverte d'Arcade                                            120
-* [x] Meilleure gestion du clavier                                   100
-* [x] Meilleure gestion de la caméra                                 180
-* [ ] `README.md` à jour, expliquant comment jouer                    ??
-* [x] Charger la map depuis un fichier                               120
-* [x] Implémenter la lave                                             20
-* [x] Blobs: mouvement                                               150
-* [x] Epée: apparition et dégats                                     200
-* [x] Epée: angle et placement                                        50
-* [x] Score: pièces                                                   30
-* [x] Score: texte                                                    10
-* [x] Chauves souris: mouvement                                       120
-* [x] Niveaux                                                        180 
-* [x] Arc angle                                                      150
+* [x] Découverte d'Arcade                                              120
+* [x] Meilleure gestion du clavier                                     100
+* [x] Meilleure gestion de la caméra                                   180
+* [ ] `README.md` à jour, expliquant comment jouer                     ??
+* [x] Charger la map depuis un fichier                                 120
+* [x] Implémenter la lave                                              20
+* [x] Blobs: mouvement                                                 150
+* [x] Epée: apparition et dégats                                       200
+* [x] Epée: angle et placement                                         50
+* [x] Score: pièces                                                    30
+* [x] Score: texte                                                     10
+* [x] Chauves souris: mouvement                                        120
+* [x] Niveaux                                                          180 
+* [x] Arc angle                                                        150
 * [x] Flèches: vitesse apparition et dégats                            ??
-* [x] Panneau et lecture de prochaine map                             120
-* [x] Lecture de carte                                                180
+* [x] Panneau et lecture de prochaine map                              120
+* [x] Lecture de carte                                                 180
 * [x]Creation d'un algo pour platformes en manuel                      90
 * [x] Plateformes qui bougent                                          180
 * [x] Gates et levier                                                  ??
-* [x] Lecture de flèches map                                           360
+* [x] Lecture de flèches map                                           360  
+* [x] Score contrainte                                                 60
+* [x] Affichage de mort etc                                            30
+* [x] Refactoring et relecture des fichiers                            90
+
 ---
 
 ## À faire (prochaine étape)
@@ -40,7 +44,7 @@ Mettez ici ce que vous pensez devoir être la ou les 2 prochaines étapes pour c
 Par exemple :
 
 * Henri : tests
-* Stephan : Collisions lave et tests
+* Stephan :  tests 
 
 ---
 
@@ -71,4 +75,4 @@ Création algo pour lecture de flèches et finalisation des platformes bougeante
 ### Semaine 13
 Finalisation des gates et platformes. Refactoring et correction des erreurs par rapport a mypy. 
 ### Semaine 14
-Finalisation du code refactoring et tests. Creation des contraintes pour le changement de carte avec les pieces.
+Finalisation du code refactoring et tests. Creation des contraintes pour le changement de carte avec les pieces. Creations et ajouts de nouvelles extensions au proet et implementation de la contrainte finale sur le score. Relecture du code et refactoring, creation d'une nouvelle classe. Corrections des erreurs et améliorations du code.

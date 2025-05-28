@@ -50,4 +50,4 @@ Sur quelle structure travaille cet algorithme ? Quels sont les avantages et inco
 
 Stephan:
 
-Il repose sur le fait de iterer sur les positions des blocs a travers la lecture de la carte. Sur ce qu'on appelle DFS. Il a l'avantage...
+Il repose sur le fait de iterer sur les positions des blocs a travers la lecture de la carte. Le DFS va creer un arbre avec les differents blocs et leur voisins qu'il parcourt pour verifier que la definition de platfrome est efffectuee. Son gros avantage est que l'algo est plutot simple a implementer. Il est particulierement efficace dans notre cas pour former les differentes cellules (voisins dans le graphe) et iterer sur eux. Cependant la recherche grace au DFS (sur quoi repose l'algo) peut etre un peu lente s'il y a beaucoup de blocs et pas toujours optimale.

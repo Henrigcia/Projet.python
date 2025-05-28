@@ -17,7 +17,7 @@ class Portal(arcade.Sprite):
     teleport_y: int
     connected: arcade.Sprite 
 
-    def __init__(self, x: int, y: int ,a: int, b: int)->None:
+    def __init__(self, x: int, y: int ,a: int, b: int) -> None:
         self.x = x
         self.y = y
         self.teleport_x = a
