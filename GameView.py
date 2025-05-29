@@ -26,7 +26,7 @@ ARROW_SPEED = 12
 
 MAX_FLOPS = 10 
 
-FIRST_MAP = "maps/map4.txt"                 # First level map file; the each next level is referenced in the map file itself
+FIRST_MAP = "maps/map1.txt"                 # First level map file; the each next level is referenced in the map file itself
 GAME_COMPLETE = "end"
 
 SYMBOLS = {
@@ -91,7 +91,7 @@ class GameView(arcade.View):                                                    
     weapon_active: bool
     arrow_active: bool = False
     arrow_speed_vec : arcade.Vec2 = arcade.Vec2(0,0)                             
- 
+    
     current_map : str                                                           # Current map file name
     next_map : str                                                              # Ref to the next level map
     score : int                                                                 # Variable for the score 
@@ -151,6 +151,8 @@ class GameView(arcade.View):                                                    
         self.sword_list.append(self.player_sword)
         
         
+        self.text_coins_true: bool = False
+        self.j: float = 3
         self.player_bow: arcade.Sprite = arcade.Sprite(                         # Setup bow
             "assets/kenney-voxel-items-png/bowArrow.png",
             scale=0.5 * 0.7
@@ -408,6 +410,8 @@ class GameView(arcade.View):                                                    
         for g in self.gate_list:
             self.solid_list.append(g)
 
+        self.text_coins = arcade.Text(f"Not enough coins to pass this level. You need: {self.pass_score-self.score} more coin(s)",self.window.width/2,self.window.height/4, font_size = 24, color=arcade.color.RED_DEVIL,font_name="arial", anchor_x="center",anchor_y="baseline")
+
         self.player_sprite_list.append(self.player_sprite)                      # Add player
         self.physics_engine = arcade.PhysicsEnginePlatformer(                   # Initialize physics
             self.player_sprite,
@@ -434,9 +438,9 @@ class GameView(arcade.View):                                                    
         self.clear()
                                                                     # always start with self.clear()
         with self.camera.activate():
-            self.platforme_list.draw()
-            if self.score >= self.pass_score:                                   # Check if score is sufficient for the Exit to show up
-                self.sortie_list.draw()
+            self.platforme_list.draw() 
+                               
+            self.sortie_list.draw()
             self.wall_list.draw()
             self.lava_list.draw()
             self.monsters_list.draw()
@@ -453,7 +457,11 @@ class GameView(arcade.View):                                                    
                 self.bow_list.draw()
             if self.arrow_active: 
                 self.arrow_list.draw()   
-                  
+
+        if self.text_coins_true and self.j<2: 
+            self.text_coins.draw()                    #Message when player tries to exit with not enough coins
+             
+
         with self.camera2.activate():
             text = arcade.Text(f"Score: {self.score}/{self.pass_score}", 5 ,5, font_size = 16, color=arcade.color.DARK_BLUE_GRAY)     #Function for the score
         text.draw()
@@ -586,14 +594,19 @@ class GameView(arcade.View):                                                    
                 self.on_player_dead()
 
         # Check if Exit hit ---------------------------------- 
+        self.j += delta_time
         for o in self.sortie_list:
-            o.alpha = 255 if self.score >= self.pass_score else 0                           # Check if score is sufficient for the Exit to show up, transparent otherwise
-            if self.score >= self.pass_score and rect2.overlaps(o.rect):
+            if arcade.check_for_collision(self.player_sprite, o) and self.score>=self.pass_score:
                 if self.next_map == GAME_COMPLETE:
                     self.on_game_complete()                                                 # If game is over
                 else:
-                    self.load_level(self.next_map)
-                                                              # Otherwise load next level
+                    self.load_level(self.next_map)                  # Otherwise load next level
+            elif arcade.check_for_collision(self.player_sprite, o) and self.score<self.pass_score:
+                print("touch exit")
+                self.text_coins_true = True
+                self.j = 0
+                
+
         #Checks when the player fells of the map ------------     
         if self.player_sprite.center_y<-500:
             self.on_player_dead()
