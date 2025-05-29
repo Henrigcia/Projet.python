@@ -1,0 +1,37 @@
+width: 20
+height: 7
+next-map: maps/map2.txt
+switches:
+  - x: 1
+    y: 5
+    switch_on:
+          - action: open-gate
+            x: 3
+            y: 5
+    switch_off:
+          - action: close-gate
+            x: 3
+            y: 5
+  - x: 8
+    y: 1
+    switch_on:
+          - action: open-portal
+            x: 11
+            y: 1
+            go_x: 14
+            go_y: 1 
+    switch_off:
+          - action: open-portal
+            x: 11
+            y: 1  
+            go_x: 14
+            go_y: 1 
+---
+      
+              vvv
+ ^ |  ooo       xxx
+----  ---       
+    oooo      --→→→      
+    ---        
+ S*     ^  P x ooooEooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+====££=======================================================================================================
