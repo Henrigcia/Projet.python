@@ -39,6 +39,7 @@ def test_sword(window: arcade.Window)->None:
 
     #Verifies the sword is deactivated
     assert view.weapon_active == False, "Sword is still active"
+
     #Teleports near a blob
     view.player_sprite.center_x= 5*64
     view.player_sprite.center_y = 4*64
@@ -279,28 +280,28 @@ def test_die(window: arcade.Window)->None:
     view.player_sprite.center_y = 6*64
     #wait 5 seconds
     window.test(100)
-    assert view.flop >0, "Did not die to bats"
+    assert view.deaths >0, "Did not die to bats"
 
     #Die to blobs -----------------
     #teleport to dying platform
     view.player_sprite.center_x= 5*64
     view.player_sprite.center_y = 4*64
     window.test(250)
-    assert view.flop>1, "Did not die to blob"
+    assert view.deaths>1, "Did not die to blob"
 
     #Die of falling -----------------
     #Run to edge and fall
     view.on_key_press(arcade.key.LEFT,0)
     window.test(80)
     view.on_key_release(arcade.key.LEFT,0)
-    assert view.flop>2, "Did not die to falling"
+    assert view.deaths>2, "Did not die to falling"
 
     #Die of Lava -------------------
 
     view.on_key_press(arcade.key.RIGHT, 0)
     window.test(60)
 
-    assert view.flop>3, "Did not die to lava"
+    assert view.deaths>3, "Did not die to lava"
 
     view.on_key_release(arcade.key.RIGHT, 0)
 

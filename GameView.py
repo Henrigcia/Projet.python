@@ -24,7 +24,7 @@ TILE_SIZE = 64
 ARROW_GRAVITY = 10
 ARROW_SPEED = 12
 
-MAX_FLOPS = 10 
+MAX_DEATHS = 100                            # Maximal amount of deaths before game over 
 
 FIRST_MAP = "maps/map1.txt"                 # First level map file; the each next level is referenced in the map file itself
 GAME_COMPLETE = "end"
@@ -60,21 +60,21 @@ class GameView(arcade.View):                                                    
     monsters_list : arcade.SpriteList[Monster]                                  # List of monsters (blobs and bats)
     platforme_list : arcade.SpriteList[arcade.Sprite]                           # Platform list
     gate_list : arcade.SpriteList[arcade.Sprite]                                # List of gate
-    open_gate_list : arcade.SpriteList[arcade.Sprite]                           # Only the onpen gates
+    open_gate_list : arcade.SpriteList[arcade.Sprite]                           # Only the opened invisible gates
     switch_list: list[Switch]                                                   # List of switches
-    solid_list: arcade.SpriteList[arcade.Sprite]                                
-    sprite_portal: arcade.SpriteList[Portal]                                    # Sprite of the portal
-    portals: arcade.SpriteList[arcade.Sprite]                                   
-    new_switch_list: arcade.SpriteList[arcade.Sprite]                           # List of the new list
-    sprite_switch: arcade.SpriteList[arcade.Sprite]                             # The sprite of the switche
+    solid_list: arcade.SpriteList[arcade.Sprite]                                # List of solid blocks (walls + gates)
+    sprite_portal: arcade.SpriteList[Portal]                                    # SpriteList of portals
+    portals: arcade.SpriteList[arcade.Sprite]                                   # Spritelist of activated visible portals
+    new_switch_list: arcade.SpriteList[arcade.Sprite]                           # List of switches
+    sprite_switch: arcade.SpriteList[arcade.Sprite]                             # Spritelist of the switches
     portal_list : list[Portal]                                                  # List of portals for teleportation
     switch: Switch                                                              # Switch
-    current_portal: Portal                                                      # Needed for the calculation with 2 portals
+    current_portal: Portal                                                      # Needed to check which portal you are going through
 
     camera : arcade.camera.Camera2D                                             # Creation of the camera
     sound : arcade.Sound                                                        # Sound 1
     sound_2 : arcade.Sound                                                      # Sound 2
-    camera2 : arcade.camera.Camera2D                                            # Camera for coins
+    camera2 : arcade.camera.Camera2D                                            # Camera for score and number of deaths
 
     player_sprite : arcade.Sprite                                               # Everything that relates to the player and weapons
     player_sprite_list : arcade.SpriteList[arcade.Sprite]                       # List of the player sprite
@@ -95,8 +95,8 @@ class GameView(arcade.View):                                                    
     current_map : str                                                           # Current map file name
     next_map : str                                                              # Ref to the next level map
     score : int                                                                 # Variable for the score 
-    pass_score : int                                                            # Score needed to activate Exit
-    flop: int                                                                   # Numbers of deaths   
+    pass_score : int                                                            # Score needed to pass Exit
+    deaths: int                                                                 # Numbers of deaths   
     sortie_list : arcade.SpriteList[arcade.Sprite]                              # Exit sign                                                       
 
                                                                 
@@ -111,7 +111,7 @@ class GameView(arcade.View):                                                    
         self.sound_blob = arcade.Sound(":resources:/sounds/explosion1.wav")
         self.sound_gameover = arcade.Sound("assets/Doeraene-game-over-sound.wav")   
         self.score = 0
-        self.flop = 0 
+        self.deaths = 0 
 
         self.background_color = arcade.csscolor.LIGHT_BLUE                           # Choose a nice comfy background color
         
@@ -466,9 +466,9 @@ class GameView(arcade.View):                                                    
             text = arcade.Text(f"Score: {self.score}/{self.pass_score}", 5 ,5, font_size = 16, color=arcade.color.DARK_BLUE_GRAY)     #Function for the score
         text.draw()
 
-        if self.flop >= 0:
+        if self.deaths >= 0:
             with self.camera2.activate():
-                text2 = arcade.Text(f"Number of deaths: {self.flop}", 5 ,30, font_size = 16, color=arcade.color.DARK_RED)     #Function for the deaths
+                text2 = arcade.Text(f"Number of deaths: {self.deaths}", 5 ,30, font_size = 16, color=arcade.color.DARK_RED)     #Function for the deaths
             text2.draw()
     # Player's movement -------------
     def update_movement(self) -> None:
@@ -824,9 +824,9 @@ class GameView(arcade.View):                                                    
     # Player's death and map reload logic ----------------------------------------
     def on_player_dead(self) -> None:                                                               # This method will end and reset the game to the starting position
         arcade.play_sound(self.sound_gameover)
-        self.flop += 1
-        if self.flop > MAX_FLOPS:
-            game_over_view = GameOverView(f"You are Dead {MAX_FLOPS+1} Times", True)
+        self.deaths += 1
+        if self.deaths > MAX_DEATHS:
+            game_over_view = GameOverView(f"You are Dead {MAX_DEATHS+1} Times", True)
             self.window.show_view(game_over_view)
         self.player_sprite.center_x = self.start_x                                      # Reset X
         self.player_sprite.center_y = self.start_y                                      # Reset Y                                 
