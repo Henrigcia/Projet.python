@@ -1,15 +1,15 @@
 width: 34
 height: 12
 next-map: maps/map4.txt
-pass-score: 11
+
 ---
 **
----   --    -     v
+←---  --    -     v
              *               
----         -     o   
+---→         -     o   
                 ---
----                 v
+←---                v
                        ---→→→  
----       v                
+---→       v                
 S                          ooooooooooooEooooo 
 ====££££££££££££££===========================

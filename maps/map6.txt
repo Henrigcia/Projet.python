@@ -1,7 +1,6 @@
 width: 34
 height: 12
 next-map: end
-pass-score: 3
 switches:
   - x: 5
     y: 5
