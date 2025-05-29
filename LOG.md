@@ -25,13 +25,15 @@ Vous pouvez ajouter vos propres tâches si vous le jugez utile (p.ex. avec une d
 * [x] Chauves souris: mouvement                                        120
 * [x] Niveaux                                                          180 
 * [x] Arc angle                                                        150
-* [x] Flèches: vitesse apparition et dégats                            ??
+* [x] Flèches: vitesse apparition et dégats                            240
 * [x] Panneau et lecture de prochaine map                              120
 * [x] Lecture de carte                                                 180
 * [x]Creation d'un algo pour platformes en manuel                      90
 * [x] Plateformes qui bougent                                          180
-* [x] Gates et levier                                                  ??
-* [x] Lecture de flèches map                                           360  
+* [x] Gates et levier (lecture YAML)                                   750
+* [x] Portails                                                         500
+* [x] Pixel art Doeraene et direction du sprite                        45
+* [x] Lecture de flèches map pour les platformes                       360  
 * [x] Score contrainte                                                 60
 * [x] Affichage de mort etc                                            30
 * [x] Refactoring et relecture des fichiers                            90
@@ -51,7 +53,7 @@ Par exemple :
 ## Suivi
 
 ### Semaine 2
-Création de projet et suivi du tutoriel il a fallu gérer la gravité par rapport au joeur et chargement de la map ainsi que l'affichage de certains objets sur la map.
+Création de projet et suivi du tutoriel il a fallu gérer la gravité par rapport au joueur et chargement de la map ainsi que l'affichage de certains objets sur la map.
 ### Semaine 3
 
 ### Semaine 4
@@ -75,4 +77,4 @@ Création algo pour lecture de flèches et finalisation des platformes bougeante
 ### Semaine 13
 Finalisation des gates et platformes. Refactoring et correction des erreurs par rapport a mypy. 
 ### Semaine 14
-Finalisation du code refactoring et tests. Creation des contraintes pour le changement de carte avec les pieces. Creations et ajouts de nouvelles extensions au proet et implementation de la contrainte finale sur le score. Relecture du code et refactoring, creation d'une nouvelle classe. Corrections des erreurs et améliorations du code.
+Finalisation du code refactoring et tests. Creation des contraintes pour le changement de carte avec les pieces. Creations et ajouts de nouvelles extensions au projet et implementation de la contrainte finale sur le score. Relecture du code et refactoring, creation d'une nouvelle classe. Corrections des erreurs et améliorations du code.
