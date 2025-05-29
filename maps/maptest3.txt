@@ -1,0 +1,15 @@
+width: 34
+height: 12
+next-map: maps/map4.txt
+
+---
+**
+---   --     -     v
+             *               
+---          -   o   
+                ---
+---                v
+                       ---→→→  
+---       v                
+S                 oooooooooooooooooooooEoooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+====££££££££££££££========================================================================================
