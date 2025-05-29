@@ -34,7 +34,7 @@ SYMBOLS = {
     "=": ":resources:images/tiles/grassMid.png",  # Wall
     "-": ":resources:/images/tiles/grassHalf_mid.png",  # Wall
     "x": ":resources:/images/tiles/boxCrate_double.png",  # Wall
-    "*": "assets/Doeraene-coin.png",  # Coin
+    "*": ":resources:images/items/coinGold.png",  # Coin
     "o": ":resources:/images/enemies/slimePurple.png",  # Monster (slime)
     "S": "assets/Doeraene.png",  # Start
     "£": ":resources:/images/tiles/lava.png",  # No-go (lava)
@@ -269,8 +269,6 @@ class GameView(arcade.View):                                                    
                        
                     elif char == "*":  
                         self.coin_list.append(s)                    # add a coin to coins list
-                        s.scale_x = 0.05
-                        s.scale_y = 0.05
                         self.pass_score += 1            
 
                     elif char == "o":  
