@@ -41,6 +41,9 @@ GameView ..> Platforms
 GameView ..> HSeries
 GameView ..> VSeries
 GameView ..> ConnectedCells
+GameView ..> PBlock
+GameView ..> HBlock
+GameView ..> VBlock
 
 %% Monster base
 class Monster {
@@ -51,10 +54,7 @@ class Monster {
     +kill_monster()
 }
 
-%% Blob subclass
-class Blob {
-    +int scale_x
-}
+
 
 %% Bat subclass
 class Bat {
@@ -79,14 +79,17 @@ class Gate {
 }
 
 %% Switch
+
+
+
 class Switch {
     +int x
     +int y
     +arcade.Sprite appearance
     +bool status = False
     +bool disabled = False
-    +List~Action~ switch_on
-    +List~Action~ switch_off
+    +List~SwitchAction~ switch_on
+    +List~SwitchAction~ switch_off
     +float last_hit = 0
 
     +update(delta_time: float = 1/60)
@@ -99,6 +102,25 @@ class Switch {
     +switch_action_on()
     +switch_action_off()
 }
+
+class SwitchAction {
+    +Kind kind
+    +int x
+    +int y
+    +int go_x
+    +int go_y
+}
+
+class Kind {
+    +open_gate: str
+    +close_gate: str
+    +open_portal: str
+    +disable: str
+}
+
+Switch *-- SwitchAction : contains
+SwitchAction ..> Kind : uses
+
 
 %% Portal
 class Portal {
@@ -139,13 +161,34 @@ Platforms --|> ConnectedCells
 HSeries --|> ConnectedCells
 VSeries --|> ConnectedCells
 
+%% PBlock base
+class PBlock {
+    +float boundary_low
+    +float boundary_high
+    +float d_a
+    +float d_b
+    +arcade.SpriteList~arcade.Sprite~ platform_list
+
+    +add_platform()
+}
+
+class HBlock {
+    +add_platform()
+}
+
+class VBlock {
+    +add_platform()
+}
+
+HBlock --|> PBlock
+VBlock --|> PBlock
+
 %% Inheritance connections
 Monster --|> arcade.Sprite
 Switch --|> arcade.Sprite
 Portal --|> arcade.Sprite
 Blob --|> Monster
 Bat --|> Monster
-
 
 ```
 
