@@ -30,13 +30,14 @@ Vous pouvez ajouter vos propres tâches si vous le jugez utile (p.ex. avec une d
 * [x] Lecture de carte                                                 180
 * [x]Creation d'un algo pour platformes en manuel                      90
 * [x] Plateformes qui bougent                                          180
-* [x] Gates et levier (lecture YAML)                                   750
-* [x] Portails                                                         500
+* [x] Gates et levier (lecture YAML)                                   1500
+* [x] Portails                                                         750
 * [x] Pixel art Doeraene et direction du sprite                        45
 * [x] Lecture de flèches map pour les platformes                       360  
 * [x] Score contrainte                                                 60
 * [x] Affichage de mort etc                                            30
-* [x] Refactoring et relecture des fichiers                            90
+* [x] Refactoring et relecture des fichiers                            800
+* [x] Tous les tests                                                   300
 
 ---
 

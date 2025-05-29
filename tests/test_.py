@@ -166,6 +166,10 @@ def test_switchgates(window: arcade.Window)->None:
     assert view.change_weapon == False, "Did not change weapon"
 
     view.on_mouse_press(380, 10*64, arcade.MOUSE_BUTTON_LEFT, 0)
+    # Shoots twice, to verify that the delay before toggling the switch again is respected
+    # The second arrow should NOT toggle the switch 
+    window.test(5)
+    view.on_mouse_press(390, 10*64, arcade.MOUSE_BUTTON_LEFT, 0) 
 
     window.test(10)
 
@@ -317,7 +321,7 @@ def test_platforms(window: arcade.Window)->None:
 
     window.test(50)
     #Checks that it moved left, and the player stayed on it
-    assert view.player_sprite.center_x > 13*64, "Platform did not move"
+    assert view.player_sprite.center_x > 14*64, "Platform did not move"
     assert view.player_sprite.center_y >= 4*64, "Player fell off"
 
     window.test(140)
