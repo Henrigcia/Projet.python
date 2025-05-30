@@ -1,5 +1,5 @@
-width: 68
-height: 24
+width: 272
+height: 96
 next-map: end
 switches:
   - x: 5

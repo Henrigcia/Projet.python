@@ -201,17 +201,70 @@ Nous pouvons calculer la complexité théorique de nos deux fonctions comme suit
 Notre fonction, qui charge la map et s'occupe des mouvements des blocs, commence par lire sur chaque ligne les signes présents dans le dictionnaire de symboles.  
 Nous sommes donc en **O(n)**.
 
-Or, chaque cellule qui est une liste de blocs avec leurs positions est ensuite de nouveau parcourue pour créer le chemin des plateformes. Ainsi, on se retrouverait donc en **O(n²)** car en plus de parcourir la map a la recherche de cellule on parcourt les cellules en elles-mêmes.
+Or, chaque cellule qui est une liste de blocs avec leurs positions est ensuite de nouveau parcourue pour créer le chemin des plateformes. Mais la fonction doit aussi parcourir les colonnes également. Donc la fonction doit parcourir ligne et colonne. Ainsi, on se retrouverait donc en au plus **O(n x m)**.
 
-> Où `n` est la taille de la map.  
-> On le voit bien lorsqu'on fait varier le paramètre de la largeur et la hauteur de celle-ci car le temps augemente entres les différentes maps.
+> Où `n` et  `m` sont les lignes et colonnes de la map.  
+> Cependant on peut noter qu'il y a une très légère variation de temps de chargement entre les agmentations d'entités comme expliqué ci-dessous.
 
 ### Temps d'exécution de `load_level` en fonction du nombre de blobs
 
-![Temps d'exécution](00b53f51-7bcc-4248-9352-e8966094b09a.png)
+# Analyse des Temps d'Exécution - Fonction `load_level`
 
-Sur ce graphique on peut noter comment évolue la différence de temps d'appel entre les différentes cartes. On peut voir qu'il y a une légère stabilité mais celle-ci n'est pas constante avant que la taille ne quadruple et dès que la taille quadruple on s'aperçoit que la différence commence peu à peu à croître de manière quadratique. Ainsi à partir de la taille quadruplée notre fonction sera bel et bien en **O(n²)**. Ce qui convient avec les calculs théoriques.
+## Données Mesurées
 
+### Pour Taille Double
+
+| Test | Temps Initial (s) | Temps après Augmentation (s) |
+|------|--------------------|------------------------------|
+| 1    | 0.027755970429861918 | 0.028490098790207412       |
+| 2    | 0.01896880860993406  | 0.017972407710039988       |
+| 3    | 0.04006303873000434  | 0.04369001929997467        |
+| 4    | 0.05778578641009517  | 0.06058161033986835        |
+| 5    | 0.05781755476986291  | 0.05971685093012638        |
+| 6    | 0.08264228809974156  | 0.08546410908980761        |
+
+### Pour Taille Triple
+
+| Test | Temps Initial (s) | Temps après Augmentation (s) |
+|------|--------------------|------------------------------|
+| 1    | 0.027506365400040523 | 0.030002202509786004      |
+| 2    | 0.017484945190080908 | 0.018159345540043434      |
+| 3    | 0.03974397553014569  | 0.04194625606003683       |
+| 4    | 0.0585319597797934   | 0.060174164710042534      |
+| 5    | 0.05781747670000186  | 0.058971569929854015      |
+| 6    | 0.08631786619022024  | 0.0880277935101185        |
+
+### Pour Taille Quadruple
+
+| Test | Temps Initial (s) | Temps après Augmentation (s) |
+|------|--------------------|------------------------------|
+| 1    | 0.030608712949906476 | 0.028147280380071606      |
+| 2    | 0.018413947929802818 | 0.018724664979963564      |
+| 3    | 0.03965045527991606  | 0.041414136849925856      |
+| 4    | 0.05758686486020451  | 0.06724758060998283       |
+| 5    | 0.057213650009944106 | 0.09630883875011932       |
+| 6    | 0.07942514786001993  | 0.13672808399016503       |
+
+---
+
+## Résultats
+
+- Les temps mesurés après augmentation restent **très proches** des temps initiaux.
+- Les écarts sont faibles et semblent plutôt constants.
+
+
+### Rapports Moyens des Temps (approximation)
+
+- Pour **taille double** : rapports proches de **1.01** à **1.05**  
+- Pour **taille triple** : rapports proches de **1.01** à **1.05**  
+- Pour **taille quadruple** : rapports variables, mais généralement ≤ **1.2**.
+
+---
+
+## Conclusion sur la Complexité
+
+La fonction **`load_level`** semble présenter une **complexité proche de linéaire (O(n x m))** :  
+Les temps d’exécution n’augmentent que marginalement lorsque la taille des données est doublée, triplée ou quadruplée.  
 
 ## Analyse de Complexité — `on_update`
 
@@ -225,3 +278,36 @@ Or, certains éléments (flèches, etc.) dépendent d'autres paramètres comme l
 Ainsi, presque chaque liste varie entre **O(n)** et **O(n²)**.
 
 En sommant chaque portion de code, on peut conclure que la complexité globale de notre fonction `on_update` se rapproche de **O(n²)**.
+
+# Analyse des Temps d'Exécution
+
+## Données Mesurées
+
+| Test | Temps Initial (s)   | Temps après Augmentation (s) |
+|------|---------------------|------------------------------|
+| 1    | 0.0002614976830082014 | 0.0008421041060064454       |
+| 2    | 0.0002620382030145265 | 0.001358495810010936       |
+| 3    | 0.0002545341759978328 | 0.06340233693100163        |
+| 4    | 0.00033160607499303297| 0.062059607645001964       |
+| 5    | 0.00041971688999910836| 0.06296813303400996        |
+| 6    | 0.0002747605479962658 | 0.00043539295499795116     |
+| 7    | 0.0002069993560144212 | 0.002476617988024373       |
+| 8    | 0.00022044210400781595| 0.001094399881985737       |
+| 9    | 0.000241684228007216  | 0.0019125435989990364      |
+
+## Intérpretation
+
+- On voit nettement une grosse augmentation du temps entre la map initiale et celle augmentée.
+- La croissance est donc au moins linéaire.
+
+## Résultats
+
+- **Rapport moyen des temps après augmentation / temps initial** : environ **69**.
+- Cela suggère une augmentation des temps d’exécution bien plus forte qu’une croissance linéaire.
+
+## Conclusion sur la Complexité
+
+Les résultats empiriques suggèrent une **complexité quadratique (O(n²))**.  
+On remarque l’augmentation est beaucoup plus marquée, indiquant la présence de boucles imbriquées ou d’interactions croisées qui font croître le coût en O(n²).
+
+

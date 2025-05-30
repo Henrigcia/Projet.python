@@ -7,5 +7,6 @@ next-map: maps/map3.txt
  -       
  ↓    o*       ←←=→         xxxxxxxxxxxxxxxxxxx→→→ 
     ---                     
-S ooooEooooooooooooooooooooooooooooooooooooooooooooooooooEooooooooooooooooooooooooooooooooooooooooooooooooooEooooooooooooooooooooooooooooooooooooooooooooooooooEoooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
-=======£=£=£=£==============================================================================================================================================================================================================
+S ooooEooooooooooooooooooooooooooooooooooooooooooooooooooEooooooooooooooooooooooooooooooooooooooooooooooooooEooooooooooooooooooooooooooooooooooooooooooooooooooEooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooEooooooooooooooooooooooooooooooooooooooooooooooooooEooooooooooooooooooooooooooooooooooooooooooooooooooEooooooooooooooooooooooooooooooooooooooooooooooooooEoooooooooooooooooooooooooooooooooooooooooooooooooo
+=======£=£=£=£==================================================================================================================================================================================================================££=========================================================================================================================================================================================================================
+

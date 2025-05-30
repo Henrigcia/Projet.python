@@ -1,5 +1,5 @@
-width: 40
-height: 14
+width: 160
+height: 56
 next-map: maps/map2.txt
 switches:
   - x: 1

@@ -29,8 +29,8 @@ switches:
 ---
       
  ---→→→         vvv
- ^ |  ooo       xxx
-----→ ---  xx  ----   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ ^ |  ooo       xxx    ooooEooooooooooooooooooooooooooooooooooooooooooooooooooEooooooooooooooooooooooooooooooooooooooooooooooooooEooooooooooooooooooooooooooooooooooooooooooooooooooEoooooooooooooooooooooooooooooooooooooooooooooooooo
+----→ ---  xx  ----   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx==========================================================================================================
     oooo      --→→→      
     ---        
  S*     ^  P x ooooEooooooooooooooooooooooooooooooooooooooooooooooooooEooooooooooooooooooooooooooooooooooooooooooooooooooEooooooooooooooooooooooooooooooooooooooooooooooooooEoooooooooooooooooooooooooooooooooooooooooooooooooo

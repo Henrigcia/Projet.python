@@ -63,19 +63,16 @@
 
 ### Quel algorithme utilisez-vous pour identifier tous les blocs d’une plateformes, et leurs limites de déplacement ?
 
-<!--Refaire stephan-->
-
 Stephan:
 
-* Notre algorithme prend un set des positions des blocs qui apparaissent la map et les stock. En lui definissant ce que constitue une platforme il va creer des iles de blocs en les rassemblant. Ensuite notre algo' regarde les blocs a gauche et a droite et au dessus et dessous et les place dans une liste avec les voisins de ceux-ci, ces voisins peuvent etre des condidats potentiels pour creer l'ile (platformes). De plus l'algo check si on a deja visite la cellule constituee de blocs. Si le voisin n'a pas deja ete visite et fait partie de la platforme on le rajoute dans la liste des blocs qui font la platforme. On itere sur toutes les coordonnees dans le set. En faisant tout ca il cree alors un set qui retourne les positions cette fois-ci des blocs qui constituent la platforme. Ainsi on obtient donc grace a cet algorithe toutes les positions des "iles" (platformes) que forment les differents blocs.  
+* Notre algorithme débute en stockant dans un ensemble (set) les positions de tous les blocs présents sur la carte. Ensuite, il définit ce qui constitue une plateforme en regroupant les blocs adjacents pour former des îles, c’est-à-dire des ensembles connexes de blocs. Pour identifier ces îles, l’algorithme adopte une approche similaire à une recherche en profondeur (DFS, Depth-First Search). Il parcourt chaque coordonnée de l’ensemble et, pour chaque bloc, il vérifie les voisins situés à gauche, à droite, au-dessus et en dessous afin de déterminer s’ils appartiennent à la même plateforme. Si un voisin est identifié comme faisant partie de la plateforme et qu’il n’a pas encore été visité, il est ajouté à la liste des blocs formant l’île et devient le point de départ pour une exploration en profondeur. Cette exploration continue jusqu’à ce que tous les blocs connectés soient découverts. Ainsi, chaque appel de DFS génère un ensemble complet de positions décrivant une île unique. En répétant cette procédure pour toutes les coordonnées du set, l’algorithme parvient à identifier l’intégralité des îles (ou plateformes) formées par les différents blocs de la carte.
+
 
 ### Sur quelle structure travaille cet algorithme ? Quels sont les avantages et inconvénients de votre choix ?
 
-<!--Refaire stephan-->
-
 Stephan:
 
-* Il repose sur le fait de iterer sur les positions des blocs a travers la lecture de la carte. Le DFS va creer un arbre avec les differents blocs et leur voisins qu'il parcourt pour verifier que la definition de platfrome est efffectuee. Son gros avantage est que l'algo est plutot simple a implementer. Il est particulierement efficace dans notre cas pour former les differentes cellules (voisins dans le graphe) et iterer sur eux. Cependant la recherche grace au DFS (sur quoi repose l'algo) peut etre un peu lente s'il y a beaucoup de blocs et pas toujours optimale.
+* Il repose sur l’itération des positions des blocs lors de la lecture de la carte. Le DFS (Depth-First Search) est utilisé pour explorer et créer un arbre reliant les différents blocs et leurs voisins. Cet arbre est ensuite parcouru pour vérifier si la définition de la plateforme est respectée. Le principal avantage de cette approche est sa simplicité d’implémentation : l’algorithme est clair et direct. De plus, il s’avère particulièrement efficace pour identifier et regrouper les cellules (les voisins du graphe) en plateformes complètes. Toutefois, la recherche en profondeur (qui constitue la base de l’algorithme) peut devenir un peu lente lorsque le nombre de blocs augmente considérablement, et elle n’est pas toujours optimale en termes de performance pure.
 
 ### Quelle bibliothèque utilisez-vous pour lire les instructions des interrupteurs ? Dites en une ou deux phrases pourquoi vous avez choisi celle-là.
 
