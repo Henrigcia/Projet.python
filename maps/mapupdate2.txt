@@ -1,0 +1,11 @@
+width: 40
+height: 12
+next-map: maps/map3.txt
+
+---
+ *  
+ -       
+ ↓    o*       ←←=→
+    ---           
+S         o*     E
+=======£=£=£=£======

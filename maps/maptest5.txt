@@ -24,14 +24,14 @@ gates:
          =
      v   =          ^                    E
          =         ---                  ---
-^        =   -                          
----      =   o           v         - -
+^ o       =   -                          
+---      =   o           v         - ----------------------------------------------→→→ 
       o  =   -      v  v     oooo
 v    --- =   *              -----
-         =  --           o    
+      oo =  --→→→        o    
      --- |              --
   *      =  v     ooooo  
  ---     =        -----          v
   S      =      *
-oooooooooooooooo|oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
-===============£££===================================================================================
+ooooEooooooooooo|ooooooooooooooooooooooooooooooooooooooEooooooooooooooooooooooooooooooooooooooooooooooooooEooooooooooooooooooooooooooooooooooooooooooooooooooEooooooooooooooooooooooooooooooooooooooooooooo
+===============£££=========================================================================================================================================================================================

@@ -4,12 +4,12 @@ next-map: maps/map4.txt
 
 ---
 **
----   --     -     v
+---   --→→→      -     v
              *               
----          -   o   
-                ---
----                v
+---→→→           -   o   
+                ---  xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+---→→→                 v
                        ---→→→  
----       v                
-S                 oooooooooooooooooooooEoooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
-====££££££££££££££========================================================================================
+---→→→       v                
+S                 ooooEooooooooooooooooooooooooooooooooooooooooooooooooooEooooooooooooooooooooooooooooooooooooooooooooooooooEooooooooooooooooooooooooooooooooooooooooooooooooooEoooooooooooooooooooooooooooooooooooooooooooooooooo
+====££££££££££££££================================================================================================================================================================================================================

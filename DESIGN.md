@@ -192,4 +192,36 @@ Bat --|> Monster
 
 ```
 
+## Analyse de Complexité — `load_level`
 
+Nous pouvons calculer la complexité théorique de nos deux fonctions comme suit :
+
+### `load_level`
+
+Notre fonction, qui charge la map et s'occupe des mouvements des blocs, commence par lire sur chaque ligne les signes présents dans le dictionnaire de symboles.  
+Nous sommes donc en **O(n)**.
+
+Or, chaque cellule qui est une liste de blocs avec leurs positions est ensuite de nouveau parcourue pour créer le chemin des plateformes. Ainsi, on se retrouverait donc en **O(n²)** car en plus de parcourir la map a la recherche de cellule on parcourt les cellules en elles-mêmes.
+
+> Où `n` est la taille de la map.  
+> On le voit bien lorsqu'on fait varier le paramètre de la largeur et la hauteur de celle-ci car le temps augemente entres les différentes maps.
+
+### Temps d'exécution de `load_level` en fonction du nombre de blobs
+
+![Temps d'exécution](00b53f51-7bcc-4248-9352-e8966094b09a.png)
+
+Sur ce graphique on peut noter comment évolue la différence de temps d'appel entre les différentes cartes. On peut voir qu'il y a une légère stabilité mais celle-ci n'est pas constante avant que la taille ne quadruple et dès que la taille quadruple on s'aperçoit que la différence commence peu à peu à croître de manière quadratique. Ainsi à partir de la taille quadruplée notre fonction sera bel et bien en **O(n²)**. Ce qui convient avec les calculs théoriques.
+
+
+## Analyse de Complexité — `on_update`
+
+Ici, on peut calculer chaque partie que exécute la fonction `on_update`.  
+La plupart des calculs se font à travers la recherche d'éléments dans une liste.
+
+À chaque fois qu'on fait une recherche, une suppression, un ajout ou une vérification de collision, on est en **O(n)**,  
+où `n` est le nombre d’éléments dans la liste.
+
+Or, certains éléments (flèches, etc.) dépendent d'autres paramètres comme les murs, les plateformes, ou encore la taille de la map.  
+Ainsi, presque chaque liste varie entre **O(n)** et **O(n²)**.
+
+En sommant chaque portion de code, on peut conclure que la complexité globale de notre fonction `on_update` se rapproche de **O(n²)**.

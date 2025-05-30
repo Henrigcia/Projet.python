@@ -1,5 +1,5 @@
-width: 24
-height: 8
+width: 48
+height: 12
 next-map: maps/map5.txt
 
 switches:
@@ -41,11 +41,11 @@ gates:
     state: open # this gate is open when the game starts
   # the other gates start closed
 ---
-^     x→→→        x→→→ 
+^     x           x
 --    x ^         x
-    P x-----      | vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-   ---x   oooooo  ================================================================→→→ 
-      x   -----   ==========
+    P x-----      |
+   ---x           =
+      x   -----   =
 ---   x   x   |  x=
- S    x  xx * x  x= ooooEooooooooooooooooooooooooooooooooooooooooooooooooooEooooooooooooooooooooooooooooooooooooooooooooooooooEooooooooooooooooooooooooooooooooooooooooooooooooooEoooooooooooooooooooooooooooooooooooooooooo
-============================================================================================================================================================================================================================
+ S    x  xx * x  x=  E
+========================
