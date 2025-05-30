@@ -1,6 +1,6 @@
 width: 20
 height: 6
-next-map: maps/map3.txt
+next-map: maps/map4.txt
 
 ---
  *  

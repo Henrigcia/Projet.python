@@ -14,7 +14,7 @@ Vous pouvez ajouter vos propres tâches si vous le jugez utile (p.ex. avec une d
 * [x] Découverte d'Arcade                                              120
 * [x] Meilleure gestion du clavier                                     100
 * [x] Meilleure gestion de la caméra                                   180
-* [ ] `README.md` à jour, expliquant comment jouer                     ??
+* [ ] `README.md` à jour, expliquant comment jouer                     45
 * [x] Charger la map depuis un fichier                                 120
 * [x] Implémenter la lave                                              20
 * [x] Blobs: mouvement                                                 150

@@ -44,8 +44,15 @@ def test_sword(window: arcade.Window)->None:
     view.player_sprite.center_x= 5*64
     view.player_sprite.center_y = 4*64
 
-    window.test(60)
+    window.test(40)
+    view.on_mouse_press(64,5*64,arcade.MOUSE_BUTTON_LEFT,0)
+    window.test(20)
+    assert len(view.monsters_list) == ORIGINAL_NUMBER_OF_BLOBS, "Sword killed blob hitting wrong direction"
 
+    view.on_mouse_release(0,0,arcade.MOUSE_BUTTON_LEFT,0)
+
+    window.test(20)
+    
     view.on_mouse_press(10*64,5*64,arcade.MOUSE_BUTTON_LEFT,0)
 
     window.test(80)
