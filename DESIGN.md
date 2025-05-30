@@ -212,59 +212,71 @@ Or, chaque cellule qui est une liste de blocs avec leurs positions est ensuite d
 
 ## Données Mesurées
 
-### Pour Taille Double
+### Taille Double
 
-| Test | Temps Initial (s) | Temps après Augmentation (s) |
-|------|--------------------|------------------------------|
-| 1    | 0.027755970429861918 | 0.028490098790207412       |
-| 2    | 0.01896880860993406  | 0.017972407710039988       |
-| 3    | 0.04006303873000434  | 0.04369001929997467        |
-| 4    | 0.05778578641009517  | 0.06058161033986835        |
-| 5    | 0.05781755476986291  | 0.05971685093012638        |
-| 6    | 0.08264228809974156  | 0.08546410908980761        |
+| Maps | Temps Initial (s)  | Temps après Augmentation (s) |
+|------|---------------------|------------------------------|
+| 1    | 0.03351596666005207 | 0.040215169260045515       |
+| 2    | 0.019983616679965052| 0.0320184125599917         |
+| 3    | 0.04681863809993956 | 0.08216843231988605        |
+| 4    | 0.06654813448985805 | 0.113655074039998          |
+| 5    | 0.0669925301198964  | 0.11534706244012341        |
+| 6    | 0.09267762753996067 | 0.14442784916987875        |
 
-### Pour Taille Triple
+### Taille Triple
 
-| Test | Temps Initial (s) | Temps après Augmentation (s) |
-|------|--------------------|------------------------------|
-| 1    | 0.027506365400040523 | 0.030002202509786004      |
-| 2    | 0.017484945190080908 | 0.018159345540043434      |
-| 3    | 0.03974397553014569  | 0.04194625606003683       |
-| 4    | 0.0585319597797934   | 0.060174164710042534      |
-| 5    | 0.05781747670000186  | 0.058971569929854015      |
-| 6    | 0.08631786619022024  | 0.0880277935101185        |
+| Maps | Temps Initial (s)  | Temps après Augmentation (s) |
+|------|---------------------|------------------------------|
+| 1    | 0.032971278479963076| 0.0571959967300063         |
+| 2    | 0.02034850926982472 | 0.044654004339827226       |
+| 3    | 0.047207479130011054| 0.11939582519000397        |
+| 4    | 0.06652169388020411 | 0.16705413240008057        |
+| 5    | 0.06690142965991981 | 0.16539370810001855        |
+| 6    | 0.09296518293995178 | 0.21798782810015838        |
 
-### Pour Taille Quadruple
+### Taille Quadruple
 
-| Test | Temps Initial (s) | Temps après Augmentation (s) |
-|------|--------------------|------------------------------|
-| 1    | 0.030608712949906476 | 0.028147280380071606      |
-| 2    | 0.018413947929802818 | 0.018724664979963564      |
-| 3    | 0.03965045527991606  | 0.041414136849925856      |
-| 4    | 0.05758686486020451  | 0.06724758060998283       |
-| 5    | 0.057213650009944106 | 0.09630883875011932       |
-| 6    | 0.07942514786001993  | 0.13672808399016503       |
-
----
-
-## Résultats
-
-- Les temps mesurés après augmentation restent **très proches** des temps initiaux.
-- Les écarts sont faibles et semblent plutôt constants.
-
-
-### Rapports Moyens des Temps (approximation)
-
-- Pour **taille double** : rapports proches de **1.01** à **1.05**  
-- Pour **taille triple** : rapports proches de **1.01** à **1.05**  
-- Pour **taille quadruple** : rapports variables, mais généralement ≤ **1.2**.
+| Maps | Temps Initial (s)  | Temps après Augmentation (s) |
+|------|---------------------|------------------------------|
+| 1    | 0.03246971748012584 | 0.07324903425003867        |
+| 2    | 0.019971132370119448| 0.056986552150046915       |
+| 3    | 0.047092262300138826| 0.15945707021979616       |
+| 4    | 0.06792413585993927 | 0.23046211311011575       |
+| 5    | 0.06827231192990439 | 0.22642493391002064       |
+| 6    | 0.0931125046897796  | 0.2917219901300268        |
 
 ---
 
+## Visualisation et Analyse
+
+- Les temps après augmentation sont **sensiblement plus élevés** que les temps initiaux, mais l’écart reste proportionnel.
+- Pour le changement de taille, les rapports de temps augmentent mais restent globalement **linéaires**.
+
+### Rapports Moyens (approximation)
+
+| Taille de la Carte | Rapport moyen (temps après / temps initial) |
+|---------------------|---------------------------------------------|
+| Double              | ~ 1.5 - 1.7                                |
+| Triple              | ~ 2.3 - 2.5                                |
+| Quadruple           | ~ 3 - 3.2                                  |
+
+Les rapports sont cohérents avec une **complexité linéaire O(N×M)**, ou ce sont le nomre de lignes et colonnes sur la carte.
+
+---
+
+## Intérpretation
+
+La fonction `load_level` effectue :
+ Un **parcours complet** de la carte (chaque cellule une seule fois).  
+ Un algorithme de recherche de composantes connexes (**DFS**) en le reportant sur un graphe pour grouper les blocs en îles (plateformes).
+
+La compléxité serait alors de au pire **O(n x m)**, où `n` est le nombre de lignes et `m` nombre de colonnes.
+
+---
 ## Conclusion sur la Complexité
 
 La fonction **`load_level`** semble présenter une **complexité proche de linéaire (O(n x m))** :  
-Les temps d’exécution n’augmentent que marginalement lorsque la taille des données est doublée, triplée ou quadruplée.  
+Les temps d’exécution n’augmentent que peu lorsque la taille des données est doublée, triplée ou quadruplée.  
 
 ## Analyse de Complexité — `on_update`
 
@@ -281,9 +293,9 @@ En sommant chaque portion de code, on peut conclure que la complexité globale d
 
 # Analyse des Temps d'Exécution
 
-## Données Mesurées
+## Mesures
 
-| Test | Temps Initial (s)   | Temps après Augmentation (s) |
+| Maps | Temps Initial (s)   | Temps après Augmentation (s) |
 |------|---------------------|------------------------------|
 | 1    | 0.0002614976830082014 | 0.0008421041060064454       |
 | 2    | 0.0002620382030145265 | 0.001358495810010936       |
@@ -308,6 +320,6 @@ En sommant chaque portion de code, on peut conclure que la complexité globale d
 ## Conclusion sur la Complexité
 
 Les résultats empiriques suggèrent une **complexité quadratique (O(n²))**.  
-On remarque l’augmentation est beaucoup plus marquée, indiquant la présence de boucles imbriquées ou d’interactions croisées qui font croître le coût en O(n²).
+On remarque l’augmentation est beaucoup plus marquée, indiquant la présence de boucles imbriquées ou d’interactions croisées qui font croître le coût en **O(n²)** ou encore une fois `n` est le nombre de lignes.
 
 
