@@ -2,6 +2,8 @@ import arcade
 import pytest
 from GameView import GameView
 
+#Tests
+#!!!  Must have "maps/map1.txt" as FIRST_MAP in GameView for tests to run correctly
 
 def test_sword(window: arcade.Window)->None:
     view = GameView()
@@ -52,7 +54,7 @@ def test_sword(window: arcade.Window)->None:
     view.on_mouse_release(0,0,arcade.MOUSE_BUTTON_LEFT,0)
 
     window.test(20)
-    
+
     view.on_mouse_press(10*64,5*64,arcade.MOUSE_BUTTON_LEFT,0)
 
     window.test(80)

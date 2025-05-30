@@ -15,10 +15,10 @@ Blob --|> Monster
 
 %% GameView
 class GameView {
-    +List~arcade.SpriteList~ sprite_lists
-    +List~Tuple~ vectors
-    +List~bool~ booleans
-    +List~int~ integers
+    +arcade.SpriteList
+    +vectors
+    +booleans
+    +integers
 
     +setup()
     +load_map()
@@ -209,12 +209,13 @@ Or, chaque cellule qui est une liste de blocs avec leurs positions est ensuite d
 ### Temps d'exécution de `load_level` en fonction du nombre de blobs
 
 # Analyse des Temps d'Exécution - Fonction `load_level`
+Ici, nous avons choisi l'augmentation de la taille de la carte en la déboublant, triplant et quadruplant respectivement.
 
 ## Données Mesurées
 
 ### Taille Double
 
-| Maps | Temps Initial (s)  | Temps après Augmentation (s) |
+| Maps | Temps Initial (s)  | Temps après doublement en (s) |
 |------|---------------------|------------------------------|
 | 1    | 0.03351596666005207 | 0.040215169260045515       |
 | 2    | 0.019983616679965052| 0.0320184125599917         |
@@ -225,7 +226,7 @@ Or, chaque cellule qui est une liste de blocs avec leurs positions est ensuite d
 
 ### Taille Triple
 
-| Maps | Temps Initial (s)  | Temps après Augmentation (s) |
+| Maps | Temps Initial (s)  | Temps après triplement en (s) |
 |------|---------------------|------------------------------|
 | 1    | 0.032971278479963076| 0.0571959967300063         |
 | 2    | 0.02034850926982472 | 0.044654004339827226       |
@@ -236,7 +237,7 @@ Or, chaque cellule qui est une liste de blocs avec leurs positions est ensuite d
 
 ### Taille Quadruple
 
-| Maps | Temps Initial (s)  | Temps après Augmentation (s) |
+| Maps | Temps Initial (s)  | Temps après quadruplement en(s) |
 |------|---------------------|------------------------------|
 | 1    | 0.03246971748012584 | 0.07324903425003867        |
 | 2    | 0.019971132370119448| 0.056986552150046915       |
@@ -260,19 +261,8 @@ Or, chaque cellule qui est une liste de blocs avec leurs positions est ensuite d
 | Triple              | ~ 2.3 - 2.5                                |
 | Quadruple           | ~ 3 - 3.2                                  |
 
-Les rapports sont cohérents avec une **complexité linéaire O(N×M)**, ou ce sont le nomre de lignes et colonnes sur la carte.
-
 ---
 
-## Intérpretation
-
-La fonction `load_level` effectue :
- Un **parcours complet** de la carte (chaque cellule une seule fois).  
- Un algorithme de recherche de composantes connexes (**DFS**) en le reportant sur un graphe pour grouper les blocs en îles (plateformes).
-
-La compléxité serait alors de au pire **O(n x m)**, où `n` est le nombre de lignes et `m` nombre de colonnes.
-
----
 ## Conclusion sur la Complexité
 
 La fonction **`load_level`** semble présenter une **complexité proche de linéaire (O(n x m))** :  
@@ -292,20 +282,18 @@ Ainsi, presque chaque liste varie entre **O(n)** et **O(n²)**.
 En sommant chaque portion de code, on peut conclure que la complexité globale de notre fonction `on_update` se rapproche de **O(n²)**.
 
 # Analyse des Temps d'Exécution
+Pour tester les performances de la fonction nous avons choisi le fait d'augmenter les entités présentes par cartes. Ainsi on peut voir comment la fonction se comporte lors de gros amas de monstres.
 
 ## Mesures
 
-| Maps | Temps Initial (s)   | Temps après Augmentation (s) |
-|------|---------------------|------------------------------|
-| 1    | 0.0002614976830082014 | 0.0008421041060064454       |
-| 2    | 0.0002620382030145265 | 0.001358495810010936       |
-| 3    | 0.0002545341759978328 | 0.06340233693100163        |
-| 4    | 0.00033160607499303297| 0.062059607645001964       |
-| 5    | 0.00041971688999910836| 0.06296813303400996        |
-| 6    | 0.0002747605479962658 | 0.00043539295499795116     |
-| 7    | 0.0002069993560144212 | 0.002476617988024373       |
-| 8    | 0.00022044210400781595| 0.001094399881985737       |
-| 9    | 0.000241684228007216  | 0.0019125435989990364      |
+| Maps | Temps Initial  (s)   |temps après augmentation de 250 entités |
+|------|---------------------|------------------------------           |
+| 1    | 0.0002614976830082014 | 0.0008421041060064454                 |
+| 2    | 0.0002620382030145265 | 0.001358495810010936                  |
+| 3    | 0.0002545341759978328 | 0.06340233693100163                   |
+| 4    | 0.00041971688999910836| 0.06296813303400996                   |
+| 5    | 0.00022044210400781595| 0.001094399881985737                  |
+| 6    | 0.000241684228007216  | 0.0019125435989990364                 |
 
 ## Intérpretation
 

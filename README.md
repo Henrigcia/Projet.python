@@ -25,14 +25,14 @@ Chaque élément du jeu (monstres, portes, interrupteurs, etc.) est modélisé p
 
 ## Règles et astuces
 ### Objectif
-Tout simplement, finir le niveau. Pour ceci il sera nécéssaire de passer par le panneau **Exit**. Mais attention! Celui-ci n'eat que disponible une fois que le nombre nécéssaire de pièces est collectionné. Celui-ci s'affiche en bas à droite de l'écran et est unique à chaque niveau.
+Tout simplement, finir le niveau. Pour ceci il sera nécéssaire de passer par le panneau **Exit**. Mais attention! Celui-ci n'est que disponible une fois que le nombre nécéssaire de pièces est collectionné. Celui-ci s'affiche en bas à droite de l'écran et est unique à chaque niveau.
 
 ### Armes
-Le joueur est équippé de deux armes: 
+Le joueur est équipé de deux armes: 
 
 - L'**épée**, qui tranche ses ennemis au moindre contact, l'arme idéale pour du corps-à-corps
 
-- L'**arc**, qui de ses flèches permet de tuer à longue distance de ses ennemis
+- L'**arc**, qui de ses flèches permet de tuer à longue distance ses ennemis
 
 Afin de les manier, appuyez sur le ***click gauche*** de votre souris/trackpad. Changer d'arme équipée peut être fait en appuyant sur le ***click droit***. L'arme sera orientée dans la direction de la souris (par rapport au joueur).
 
@@ -45,7 +45,7 @@ Il y a deux types de monstres que vous pourrez rencontrer:
 
 ### Dangers
 
-Un moindre contact avec ces monstres vous sera fatal. Vous mourrez également au contact de la ***lave*** ainsi qu'une chute dans le ***vide absolu***. Le niveau sera alors recommancé. 
+Un moindre contact avec ces monstres vous sera fatal. Vous mourrez également au contact de la ***lave*** ainsi qu'une chute dans le ***vide absolu***. Le niveau sera alors recommencé. 
 
 ### Interrupteurs
 
@@ -55,7 +55,7 @@ Vous trouverez sur la map des ***interrupteurs***. Activez les au contact de vot
 
 - Les ***portails***, qui vous téléportent à leur lieu d'arrivée. Lorsque qu'un interrupteur active un portail, il apparaîtra ainsi que le portail d'arrivée. Passez à travers pour vous téléporter! Le portail d'arrivée fait uniquement acte de présence: vous ne pouvez pas revenir en arrière! Une fois que les portail ont été utilisés, ils disparaîssent.
 
-Certains interrupteurs ne peuvent être utilisés qu'une certain nombre de fois. Si votre arme ne l'active plus, elle n'est pas défaillante: c'est l'interrupteur qui résiste.
+Certains interrupteurs ne peuvent être utilisés qu'un certain nombre de fois. Si votre arme ne l'active plus, elle n'est pas défaillante: c'est l'interrupteur qui résiste.
 
 ## Lancer le jeu
 

@@ -2,12 +2,12 @@
 
 ### Comment avez-vous conçu la lecture du fichier ? Comment l’avez-vous structurée de sorte à pouvoir la tester de manière efficace ?
 
-- À partir d'une liste de symboles, notre fonction load_level parcours les lignes et les colonnes du fichier text. Lorsque qu'il détecte un symbole de la liste (à l'aide de condition "if), il ajoute son sprite, avec les coordonnées ligne-colonne correspondantes à la liste de sprite correspondante au symbol. Les tests étaient purement manuels, en démarrant le programme et en regardant si tous les blocs apparaissent, et si ils sont au bon endroit. Avec un minimum de trail and error, notre fonction accomplit bien ses objectifs.
+- À partir d'une liste de symboles, notre fonction load_level parcours les lignes et les colonnes du fichier text. Lorsque qu'il détecte un symbole de la liste (à l'aide de condition "if"), il ajoute son sprite, avec les coordonnées ligne-colonne correspondantes à la liste de sprite correspondante au symbol. Les tests étaient purement manuels, en démarrant le programme et en regardant si tous les blocs apparaissent, et si ils sont au bon endroit. Avec un minimum de trial and error, notre fonction accomplit bien ses objectifs.
 
 
 ### Comment avez-vous adapté vos tests existants au fait que la carte ne soit plus la même qu’au départ ? Est-ce que vos tests résisteront à d’autres changements dans le futur ? Si oui, pourquoi ? Si non, que pensez-vous faire plus tard ?
 
-* Nos tests étant purements manuels, nous répétions juste les étapes pour chaque nouveu symbol ou sprite. Pour les monstres, nous initialisons aussi leur direction et vitesse (plus la "limit box" pour les mouvement des chauve_souris) 
+* Nos tests étant purements manuels, nous répétions juste les étapes pour chaque nouveau symbole ou sprite. Pour les monstres, nous initialisons aussi leur direction et vitesse (plus la "limit box" pour les mouvement des chauve-souris) 
 
 
 ### Le code qui gère la lave ressemble-t-il plus à celui de l’herbe, des pièces, ou des blobs ? Expliquez votre réponse.
@@ -16,12 +16,12 @@
 
 ### Comment détectez-vous les conditions dans lesquelles les blobs doivent changer de direction ?
 
-* La méthode move_monster vérifie à chaque instant si il y a une collision entre le blob et wall_list à la position du blob + sa taille selon x, et sa position y -1. Si le blob est à la fin d'une platforme, cette collision n'existera pas, dans ce cas il se retourne et change de direction de mouvement. Ceci prend en compte le cas où le prochain blob est de la lave (car elle n'est pas dans wall_list). Si le bloc se cogne contre un mur, il change également de direction
+* La méthode move_monster vérifie à chaque instant si il y a une collision entre le blob et wall_list à la position du blob + sa taille selon x, et sa position y -1. Si le blob est à la fin d'une platforme, cette collision n'existera pas, dans ce cas il se retourne et change de direction de mouvement. Ceci prend en compte le cas où le prochain bloc est de la lave (car elle n'est pas dans wall_list). Si le blob se cogne contre un mur, il change également de direction.
 
 
 ### Quelles formules utilisez-vous exactement pour l’épée ? Comment passez-vous des coordonnées écran aux coordonnées monde ?
 
-* Nous crééons un le vecteur qui part du joueur jusqu'à la souris en utilisant la fonction unproject(). Ensuite nous normalisons ce vecteur (avec vec.normalise()), et à l'ide de formules trigonométriques adaptons l'orientation de l'épée.
+* Nous crééons un le vecteur qui part du joueur jusqu'à la souris en utilisant la fonction unproject(). Ensuite nous normalisons ce vecteur (avec vec.normalise()), et à l'aide de formules trigonométriques adaptons l'orientation de l'épée.
 
 ### Comment testez-vous l’épée ? Comment testez-vous que son orientation est importante pour déterminer si elle touche un monstre ?
 
@@ -45,13 +45,13 @@
 
 ### Quelles formules utilisez-vous exactement pour l’arc et les flèches ?
 
-* L'arc fonctionne exactement de la même manière que l'épée (On utilise le même vecteur et les mêmes formules). Les flèches adaptent leur vitesse au vecteur qui les constitue. Par exemple, plus la flèche est à son apogée plus elle est lente (Principe de ballistique basique). On appelle arrows.update() and la fonction on_update afin que leur vitesse et direction s'actualise à chaque frame.
+* L'arc fonctionne exactement de la même manière que l'épée (On utilise le même vecteur et les mêmes formules). Les flèches adaptent leur vitesse au vecteur qui les constitue. Par exemple, plus la flèche est à son apogée plus elle est lente (Principe de ballistique basique). On appelle arrows.update() et la fonction on_update afin que leur vitesse et direction s'actualise à chaque frame.
 
 ### Quelles formules utilisez-vous exactement pour le déplacement des chauves-souris (champ d’action, changements de direction, etc.) ?
 
-<!--Refaire stephan-->
+* On définit d'abord une zone de déplacement pour les chauves-souris, délimitée par une sorte de rectangle invisible. Elles peuvent se déplacer librement à l'intérieur de cette zone. Leur mouvement est ensuite modifié à l’aide de fonctions mathématiques fournies par la bibliothèque Arcade, ce qui permet d’ajouter un effet de distorsion ou de rendre leur trajectoire plus organique.
 
-* On leur crée un mouvement par défaut des monstres et ensuite on leur crée un champ d'action autour duquel ils peuvent naviguer. On distort leur mouvement avec les fonctions mathematiques de Arcade. On leur cree un sorte de rectangle autour et des qu'elles touchent la "limite" on leur randomise la direction avec un angle dans laquelle elles partent. On recalcule les vitesses dans les deux directions et on fait ce processus a chque fois que une chauve souris touche un "mur" invisible.
+* Lorsqu’une chauve-souris atteint les bords de cette zone, elle est repositionnée aléatoirement à l’intérieur de la limite, avec une nouvelle direction également choisie de façon aléatoire. On recalcule alors sa vitesse sur les axes X et Y en fonction de cet angle aléatoire. Ce processus se répète chaque fois qu’elle entre en contact avec un des "murs" invisibles de sa zone de déplacement.
 
 ### Comment avez-vous structuré votre programme pour que les flèches puissent poursuivre leur vol ?
 
@@ -63,14 +63,14 @@
 
 ### Quel algorithme utilisez-vous pour identifier tous les blocs d’une plateformes, et leurs limites de déplacement ?
 
-Stephan:
+
 
 * Notre algorithme débute en stockant dans un ensemble (set) les positions de tous les blocs présents sur la carte. Ensuite, il définit ce qui constitue une plateforme en regroupant les blocs adjacents pour former des îles, c’est-à-dire des ensembles connexes de blocs. Pour identifier ces îles, l’algorithme adopte une approche similaire à une recherche en profondeur (DFS, Depth-First Search). Il parcourt chaque coordonnée de l’ensemble et, pour chaque bloc, il vérifie les voisins situés à gauche, à droite, au-dessus et en dessous afin de déterminer s’ils appartiennent à la même plateforme. Si un voisin est identifié comme faisant partie de la plateforme et qu’il n’a pas encore été visité, il est ajouté à la liste des blocs formant l’île et devient le point de départ pour une exploration en profondeur. Cette exploration continue jusqu’à ce que tous les blocs connectés soient découverts. Ainsi, chaque appel de DFS génère un ensemble complet de positions décrivant une île unique. En répétant cette procédure pour toutes les coordonnées du set, l’algorithme parvient à identifier l’intégralité des îles (ou plateformes) formées par les différents blocs de la carte.
 
 
 ### Sur quelle structure travaille cet algorithme ? Quels sont les avantages et inconvénients de votre choix ?
 
-Stephan:
+
 
 * Il repose sur l’itération des positions des blocs lors de la lecture de la carte. Le DFS (Depth-First Search) est utilisé pour explorer et créer un arbre reliant les différents blocs et leurs voisins. Cet arbre est ensuite parcouru pour vérifier si la définition de la plateforme est respectée. Le principal avantage de cette approche est sa simplicité d’implémentation : l’algorithme est clair et direct. De plus, il s’avère particulièrement efficace pour identifier et regrouper les cellules (les voisins du graphe) en plateformes complètes. Toutefois, la recherche en profondeur (qui constitue la base de l’algorithme) peut devenir un peu lente lorsque le nombre de blocs augmente considérablement, et elle n’est pas toujours optimale en termes de performance pure.
 
