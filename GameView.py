@@ -41,7 +41,7 @@ SYMBOLS = {
     "v": "assets/kenney-voxel-items-png/kenney-extended-enemies-png/Bat.png",   #Bat
     "E": ":resources:/images/tiles/signExit.png", #Exit
     "|": ":resources:/images/tiles/stoneCenter_rounded.png", #Gate
-    "P": "assets/purple-portal.png", #Portal     
+    "P": "assets/Start-portal.png", #Portal     
 }
 
 platform_chars = {"=","-","x","£","E"}                                          # Caracters that form the platform
@@ -793,7 +793,7 @@ class GameView(arcade.View):                                                    
             if portal.x == self.center_z_to_coordinates(p.center_x) and portal.y == self.center_z_to_coordinates(p.center_y) : # Checks if a portal read by the map coincides with the portal of the switch
 
                 portal.connected =  arcade.Sprite(      #Spawns the arrival portal (Which is only an image, no collision with the player)
-                "assets/purple-portal.png",
+                "assets/arrival-portal.png",
                 scale = 0.4*0.2
                 )
                 portal.connected.center_x = self.coordinates_to_center_z(portal.teleport_x) 
