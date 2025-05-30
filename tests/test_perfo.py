@@ -3,29 +3,29 @@ from GameView import *
 import timeit
 import pytest
 
-# def test_on_update(window :arcade.Window) -> None:
-#     gv = GameView()
-#     gv.load_level("maps/map3.txt")
-#     gv.setup()
-#     number = 1000
-#     res1 = timeit.timeit(lambda: gv.on_update(1/60), number=number)
+def test_on_update(window :arcade.Window) -> None:
+    gv = GameView()
+    gv.load_level("maps/map3.txt")
+    gv.setup()
+    number = 1000
+    res1 = timeit.timeit(lambda: gv.on_update(1/60), number=number)
    
-#     gv.load_level("maps/maptest3.txt")
-#     res2 = timeit.timeit(lambda: gv.on_update(1/60), number=number)
-#     print(res1 / number)
-#     print(res2 / number)
-    # gv.load_level("maps/map3.txt")
-    # res3 = timeit.timeit(lambda: gv.on_update(1/60), number=number)
-    # print(res3 / number)
-    # gv.load_level("maps/map4.txt")
-    # res4 = timeit.timeit(lambda: gv.on_update(1/60), number=number)
-    # print(res4 / number)
-    # gv.load_level("maps/map5.txt")
-    # res5 = timeit.timeit(lambda: gv.on_update(1/60), number=number)
-    # print(res5 / number)
-    # gv.load_level("maps/map6.txt")
-    # res6 = timeit.timeit(lambda: gv.on_update(1/60), number=number)
-    # print(res6 / number)
+    gv.load_level("maps/maptest3.txt")
+    res2 = timeit.timeit(lambda: gv.on_update(1/60), number=number)
+    print(res1 / number)
+    print(res2 / number)
+    gv.load_level("maps/map3.txt")
+    res3 = timeit.timeit(lambda: gv.on_update(1/60), number=number)
+    print(res3 / number)
+    gv.load_level("maps/map4.txt")
+    res4 = timeit.timeit(lambda: gv.on_update(1/60), number=number)
+    print(res4 / number)
+    gv.load_level("maps/map5.txt")
+    res5 = timeit.timeit(lambda: gv.on_update(1/60), number=number)
+    print(res5 / number)
+    gv.load_level("maps/map6.txt")
+    res6 = timeit.timeit(lambda: gv.on_update(1/60), number=number)
+    print(res6 / number)
     
     
 
