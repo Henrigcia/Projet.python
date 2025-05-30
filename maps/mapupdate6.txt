@@ -1,5 +1,5 @@
-width: 34
-height: 12
+width: 68
+height: 24
 next-map: end
 switches:
   - x: 5
@@ -50,7 +50,7 @@ gates:
     state: open
 
 ---
-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx→→→ 
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 x    v       v     x             ^x
 x           v      x            xxx
 x*     v       v   |   o          x
@@ -60,6 +60,6 @@ x     x-           xxxxxx  -     *x
 x    ^x      ^             v     -x
 x   xxx-     -      v        -v   x
 x   x   *                         x
-x   xxx£|££££££££££££££££££££££|£££ xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-x S  Px££££££££££ P **************£ ooooEooooooooooooooooooooooooooooooooooooooooooooooooooEooooooooooooooooooooooooooooooooooooooooooooooooooEooooooooooooooooooooooooooooooooooooooooooooooooooEoooooooooooooooooooooooooooooooooooooooooooooooooooo
-=£====================================================================================================================================================================================================================================================
+x   xxx£|££££££££££££££££££££££|£££
+x S  Px££££££££££ P **************£
+=£=================================

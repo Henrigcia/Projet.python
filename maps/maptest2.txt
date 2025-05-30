@@ -3,9 +3,9 @@ height: 6
 next-map: maps/map3.txt
 
 ---
- *  
+ *  xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx→→→ 
  -       
- ↓    o*       ←←=→
-    ---           
-S oooooo       ooooo *    Eooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
-=======£=£=£=£======================================================================================================
+ ↓    o*       ←←=→         xxxxxxxxxxxxxxxxxxx→→→ 
+    ---                     
+S ooooEooooooooooooooooooooooooooooooooooooooooooooooooooEooooooooooooooooooooooooooooooooooooooooooooooooooEooooooooooooooooooooooooooooooooooooooooooooooooooEoooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+=======£=£=£=£==============================================================================================================================================================================================================

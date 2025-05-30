@@ -28,10 +28,10 @@ switches:
             go_y: 1 
 ---
       
-              vvv
+ ---→→→         vvv
  ^ |  ooo       xxx
-----  ---       
+----→ ---  xx  ----   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     oooo      --→→→      
     ---        
- S*     ^  P x ooooEooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
-====££=======================================================================================================
+ S*     ^  P x ooooEooooooooooooooooooooooooooooooooooooooooooooooooooEooooooooooooooooooooooooooooooooooooooooooooooooooEooooooooooooooooooooooooooooooooooooooooooooooooooEoooooooooooooooooooooooooooooooooooooooooooooooooo
+====££=========================================================================================================================================================================================================================
